@@ -43,6 +43,14 @@
     #include "allocator.h"
 #endif
 
+#ifndef ALLOCATOR_ARENA_ALIGNMENT
+    #if !defined(alignof) || !defined(alignas)
+        #include <stdalign.h>
+    #endif
+
+    #define ALLOCATOR_ARENA_ALIGNMENT alignof(max_align_t)
+#endif
+
 #include <stdint.h>
 #include <string.h>
 
@@ -51,7 +59,7 @@ struct arena_block {
     size_t allocated;
     struct arena_block *next;
     void *buffer;
-    alignas(max_align_t) uint8_t data[];
+    uint8_t data[];
 };
 
 struct arena_alloc {
@@ -112,7 +120,7 @@ static void *arena_alloc_fn(
         return NULL;
 
     if (size > 0) {
-        size = ALLOCATOR_ARENA_ALIGN(size, alignof(max_align_t));
+        size = ALLOCATOR_ARENA_ALIGN(size, ALLOCATOR_ARENA_ALIGNMENT);
 
         while (block && block->used + size > block->allocated) {
             prev = block;
