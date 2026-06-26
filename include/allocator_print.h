@@ -26,7 +26,7 @@
 #define ALLOCATOR_PRINT_H
 
 #ifndef ALLOCATOR_T
-#include "allocator.h"
+    #include "allocator.h"
 #endif
 
 #include <stdio.h>
@@ -39,11 +39,7 @@ struct print_alloc {
 };
 
 static void *print_alloc_fn(
-    allocator_t *self,
-    void *ptr,
-    size_t old,
-    size_t size,
-    size_t zalign
+    allocator_t *self, void *ptr, size_t old, size_t size, size_t zalign
 ) {
     struct print_alloc *alloc = (struct print_alloc *)self;
     void *out = allocator_call(alloc->base, ptr, old, size, zalign);
@@ -54,7 +50,9 @@ static void *print_alloc_fn(
             "%lu,%lf,%p,%p,%p,%lu,%lu,%lu,%s,%p\n",
             (unsigned long)time(NULL),
             (double)clock() / CLOCKS_PER_SEC,
-            self, alloc->base, ptr,
+            self,
+            alloc->base,
+            ptr,
             (unsigned long)old,
             (unsigned long)size,
             (unsigned long)(zalign & ~1),
@@ -66,9 +64,7 @@ static void *print_alloc_fn(
 }
 
 static inline void print_alloc_init(
-    struct print_alloc *out,
-    FILE *log,
-    allocator_t *base
+    struct print_alloc *out, FILE *log, allocator_t *base
 ) {
     allocator_fn **interface = (allocator_fn **)&out->alloc.interface;
     *interface = &print_alloc_fn;

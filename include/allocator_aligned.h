@@ -32,7 +32,7 @@
 #define ALLOCATOR_ALIGNED
 
 #ifndef ALLOCATOR_T
-#include "allocator.h"
+    #include "allocator.h"
 #endif
 
 #include <stdint.h>
@@ -44,7 +44,9 @@ struct align_alloc {
     size_t min;
 };
 
-static void *align_alloc_fn(allocator_t *self, void *ptr, size_t old, size_t size, size_t zalign) {
+static void *align_alloc_fn(
+    allocator_t *self, void *ptr, size_t old, size_t size, size_t zalign
+) {
     if (!self || (ptr && size > 0 && old == 0))
         return NULL;
 
@@ -75,7 +77,8 @@ static void *align_alloc_fn(allocator_t *self, void *ptr, size_t old, size_t siz
         if (!buf)
             return NULL;
 
-        uintptr_t aligned = ((uintptr_t)buf + sizeof(void *) + (align - 1)) & (~(align - 1));
+        uintptr_t aligned = ((uintptr_t)buf + sizeof(void *) + (align - 1))
+            & (~(align - 1));
         void **header = (void **)(aligned - sizeof(void *));
 
         *header = buf;
@@ -84,7 +87,8 @@ static void *align_alloc_fn(allocator_t *self, void *ptr, size_t old, size_t siz
         if (ptr) {
             void *real = *(void **)((uintptr_t)ptr - sizeof(void *));
             deallocate(
-                alloc->base, real,
+                alloc->base,
+                real,
                 old + sizeof(void *) + ((uintptr_t)real - (uintptr_t)ptr)
             );
         }
@@ -96,15 +100,13 @@ static void *align_alloc_fn(allocator_t *self, void *ptr, size_t old, size_t siz
 
         void *real = *(void **)((uintptr_t)ptr - sizeof(void *));
         deallocate(
-            alloc->base, real,
+            alloc->base,
+            real,
             old + sizeof(void *) + ((uintptr_t)real - (uintptr_t)ptr)
         );
 
         if (zalign & 1) {
-            memset(
-                &((unsigned char *)out)[old],
-                0, size - old
-            );
+            memset(&((unsigned char *)out)[old], 0, size - old);
         }
     } else if (zalign & 1) {
         memset(out, 0, size);
@@ -113,7 +115,9 @@ static void *align_alloc_fn(allocator_t *self, void *ptr, size_t old, size_t siz
     return out;
 }
 
-static inline void align_alloc_init(struct align_alloc *out, allocator_t *base, size_t min) {
+static inline void align_alloc_init(
+    struct align_alloc *out, allocator_t *base, size_t min
+) {
     if (out) {
         allocator_fn **interface = (allocator_fn **)&out->alloc.interface;
         *interface = &align_alloc_fn;

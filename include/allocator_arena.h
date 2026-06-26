@@ -148,8 +148,9 @@ static void *arena_alloc_fn(
     return out;
 }
 
-static inline void
-arena_alloc_init(struct arena_alloc *arena, allocator_t *base) {
+static inline void arena_alloc_init(
+    struct arena_alloc *arena, allocator_t *base
+) {
     if (arena) {
         allocator_fn **interface = (allocator_fn **)&arena->alloc.interface;
         *interface = &arena_alloc_fn;
@@ -158,8 +159,9 @@ arena_alloc_init(struct arena_alloc *arena, allocator_t *base) {
     }
 }
 
-static inline void
-arena_alloc_buffer(struct arena_alloc *arena, void *buffer, size_t size) {
+static inline void arena_alloc_buffer(
+    struct arena_alloc *arena, void *buffer, size_t size
+) {
     if (!arena || !buffer || size == 0)
         return;
 

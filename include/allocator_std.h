@@ -28,13 +28,15 @@
 #define ALLOCATOR_STD
 
 #ifndef ALLOCATOR_T
-#include "allocator.h"
+    #include "allocator.h"
 #endif
 
 #include <stdlib.h>
 #include <string.h>
 
-static void *standard_allocator_fn(allocator_t *self, void *ptr, size_t old, size_t size, size_t zalign) {
+static void *standard_allocator_fn(
+    allocator_t *self, void *ptr, size_t old, size_t size, size_t zalign
+) {
     if (self == ptr)
         return NULL;
     void *out = NULL;
@@ -45,12 +47,12 @@ static void *standard_allocator_fn(allocator_t *self, void *ptr, size_t old, siz
                 if (old == 0)
                     return NULL;
 
-            #if __STDC_VERSION__ >= 201112L
+#if __STDC_VERSION__ >= 201112L
                 out = aligned_alloc(zalign & ~1, size);
-            #elif _POSIX_C_SOURCE >= 200112L
+#elif _POSIX_C_SOURCE >= 200112L
                 if (posix_memalign(&out, zalign & ~1, size))
                     return NULL;
-            #endif
+#endif
 
                 if (out) {
                     memcpy(out, ptr, old < size ? old : size);
@@ -62,22 +64,19 @@ static void *standard_allocator_fn(allocator_t *self, void *ptr, size_t old, siz
             }
 
             if (out && zalign & 1 && old < size && old > 0) {
-                memset(
-                    &((unsigned char *)out)[old],
-                    0, size - old
-                );
+                memset(&((unsigned char *)out)[old], 0, size - old);
             }
             return out;
         }
 
-        if(zalign > 1) {
+        if (zalign > 1) {
 
-        #if __STDC_VERSION__ >= 201112L
+#if __STDC_VERSION__ >= 201112L
             out = aligned_alloc(zalign & ~1, size);
-        #elif _POSIX_C_SOURCE >= 200112L
+#elif _POSIX_C_SOURCE >= 200112L
             if (posix_memalign(&out, zalign & ~1, size))
                 return NULL;
-        #endif
+#endif
 
             if (out && zalign & 1)
                 memset(out, 0, size);
