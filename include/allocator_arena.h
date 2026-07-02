@@ -186,16 +186,14 @@ static inline void arena_alloc_buffer(
 
 static inline void arena_alloc_free(struct arena_alloc *arena) {
     if (arena) {
-        struct arena_block *block = arena->block, *prev;
+        struct arena_block *block, *next;
+        size_t size = sizeof(struct arena_block);
 
-        while (block) {
-            size_t size = sizeof(struct arena_block);
+        for (block = arena->block; block; block = next) {
+            next = block->next;
+
             if (block->buffer == block->data)
-                size += prev->allocated;
-
-            prev = block;
-            block = block->next;
-            deallocate(arena->base, prev, size);
+                deallocate(arena->base, block, size + block->allocated);
         }
     }
 }
