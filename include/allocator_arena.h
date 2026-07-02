@@ -186,7 +186,7 @@ static inline void arena_alloc_buffer(
 
 static inline void arena_alloc_free(struct arena_alloc *arena) {
     if (arena) {
-        struct arena_block *block, *prev;
+        struct arena_block *block = arena->block, *prev;
 
         while (block) {
             size_t size = sizeof(struct arena_block);
