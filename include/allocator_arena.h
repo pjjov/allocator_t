@@ -100,7 +100,7 @@ static inline size_t arena_alloc_growth(size_t prev, size_t req) {
 static void *arena_alloc_fn(
     allocator_t *self, void *ptr, size_t old, size_t size, size_t zalign
 ) {
-    if (!self || zalign > 0)
+    if (!self || (zalign & ~(size_t)1) > ALLOCATOR_ARENA_ALIGNMENT)
         return NULL;
 
     struct arena_alloc *arena = (struct arena_alloc *)self;
