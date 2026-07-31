@@ -4,6 +4,9 @@
 BasedOnStyle: WebKit
 AlignAfterOpenBracket: BlockIndent
 AlignEscapedNewlines: LeftWithLastLine
+AlignTrailingComments:
+  Kind: Always
+  OverEmptyLines: 0
 BinPackArguments: false
 BinPackParameters: false
 BreakBeforeBraces: Attach
