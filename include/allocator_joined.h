@@ -31,7 +31,6 @@
 
 #include <stddef.h>
 #include <stdint.h>
-#include <stdlib.h>
 
 struct join_alloc {
     size_t size;
@@ -45,8 +44,10 @@ static size_t join_alloc_align_up(size_t value, size_t alignment) {
     return (value + alignment - 1) & ~(alignment - 1);
 }
 
-static inline void *allocate_joined(struct join_alloc *blocks, size_t count) {
-    if (!blocks || count == 0)
+static inline void *allocate_joined(
+    allocator_t *alloc, struct join_alloc *blocks, size_t count, size_t *size
+) {
+    if (!blocks || !size || count == 0)
         return NULL;
 
     struct join_alloc *b, *end = &blocks[count];
@@ -72,7 +73,7 @@ static inline void *allocate_joined(struct join_alloc *blocks, size_t count) {
     size_t total = offset + max_align - 1;
     void *raw;
 
-    if (!(raw = malloc(total)))
+    if (!(raw = allocate(alloc, total)))
         return NULL;
 
     uintptr_t base = join_alloc_align_up((uintptr_t)raw, max_align);
@@ -80,6 +81,7 @@ static inline void *allocate_joined(struct join_alloc *blocks, size_t count) {
     for (b = blocks; b < end; b++)
         b->buffer = (void *)(base + b->offset);
 
+    *size = total;
     return raw;
 }
 
