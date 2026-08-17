@@ -31,6 +31,10 @@
 #ifndef ALLOCATOR_ALIGNED
 #define ALLOCATOR_ALIGNED
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #ifndef ALLOCATOR_T
     #include "allocator.h"
 #endif
@@ -125,5 +129,9 @@ static inline void align_allocator_init(
         out->min = min ? min : sizeof(max_align_t);
     }
 }
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif

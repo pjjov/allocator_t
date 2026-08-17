@@ -25,6 +25,10 @@
 #ifndef ALLOCATOR_JOINED_H
 #define ALLOCATOR_JOINED_H
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #ifndef ALLOCATOR_H
     #include "allocator.h"
 #endif
@@ -84,5 +88,9 @@ static inline void *allocate_joined(
     *size = total;
     return raw;
 }
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif

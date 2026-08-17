@@ -26,6 +26,10 @@
 #ifndef ALLOCATOR_POOL_H
 #define ALLOCATOR_POOL_H
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #ifndef ALLOCATOR_H
     #include "allocator.h"
 #endif
@@ -539,5 +543,9 @@ static int pool_allocator_init(
     pool->blockCount = 1;
     return 1;
 }
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif

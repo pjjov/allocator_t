@@ -25,6 +25,10 @@
 #ifndef ALLOCATOR_PRINT_H
 #define ALLOCATOR_PRINT_H
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #ifndef ALLOCATOR_T
     #include "allocator.h"
 #endif
@@ -86,5 +90,9 @@ static inline void print_allocator_init(
         );
     }
 }
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif

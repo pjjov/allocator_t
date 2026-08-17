@@ -30,7 +30,12 @@
 
 #ifndef ALLOCATOR_T
 #define ALLOCATOR_T
+
 #include <stddef.h>
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 typedef struct allocator_t allocator_t;
 
@@ -166,5 +171,9 @@ static inline void *xzreallocate_aligned(
 static inline void deallocate_all(allocator_t *alloc) {
     allocator_call(alloc, (void *)alloc, 0, 0, 0);
 }
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif

@@ -27,6 +27,10 @@
 #ifndef ALLOCATOR_STD
 #define ALLOCATOR_STD
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #ifndef ALLOCATOR_T
     #include "allocator.h"
 #endif
@@ -92,5 +96,9 @@ static void *standard_allocator_fn(
 }
 
 static allocator_t standard_allocator = { &standard_allocator_fn };
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif

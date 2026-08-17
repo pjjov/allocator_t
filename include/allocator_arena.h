@@ -39,6 +39,10 @@
 #ifndef ALLOCATOR_ARENA_H
 #define ALLOCATOR_ARENA_H
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #ifndef ALLOCATOR_H
     #include "allocator.h"
 #endif
@@ -217,5 +221,9 @@ static inline void arena_allocator_free(arena_allocator_t *arena) {
         arena->block = NULL;
     }
 }
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif

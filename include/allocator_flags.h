@@ -24,7 +24,10 @@
 #ifndef ALLOCATOR_FLAGS_H
 #define ALLOCATOR_FLAGS_H
 
-#include <cstdint>
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #ifndef ALLOCATOR_H
     #include "allocator.h"
 #endif
@@ -71,5 +74,9 @@ static inline allocator_t *allocator_flags_set(
 static inline uintptr_t allocator_flags_get(const allocator_t *allocator) {
     return (uintptr_t)allocator & ALLOCATOR_FLAGS_MASK;
 }
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif
