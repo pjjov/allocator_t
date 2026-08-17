@@ -38,19 +38,19 @@
 #include <stdint.h>
 #include <string.h>
 
-struct align_alloc {
+typedef struct align_allocator_t {
     allocator_t alloc;
     allocator_t *base;
     size_t min;
-};
+} align_allocator_t;
 
-static void *align_alloc_fn(
+static void *align_allocator_fn(
     allocator_t *self, void *ptr, size_t old, size_t size, size_t zalign
 ) {
     if (!self || (ptr && size > 0 && old == 0))
         return NULL;
 
-    struct align_alloc *alloc = (struct align_alloc *)self;
+    align_allocator_t *alloc = (align_allocator_t *)self;
 
     if (self == ptr) {
         deallocate_all(alloc->base);
@@ -115,12 +115,12 @@ static void *align_alloc_fn(
     return out;
 }
 
-static inline void align_alloc_init(
-    struct align_alloc *out, allocator_t *base, size_t min
+static inline void align_allocator_init(
+    align_allocator_t *out, allocator_t *base, size_t min
 ) {
     if (out) {
         allocator_fn **interface = (allocator_fn **)&out->alloc.interface;
-        *interface = &align_alloc_fn;
+        *interface = &align_allocator_fn;
         out->base = base;
         out->min = min ? min : sizeof(max_align_t);
     }

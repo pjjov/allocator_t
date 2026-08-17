@@ -32,16 +32,16 @@
 #include <stdio.h>
 #include <time.h>
 
-struct print_alloc {
+typedef struct print_allocator_t {
     allocator_t alloc;
     allocator_t *base;
     FILE *log;
-};
+} print_allocator_t;
 
-static void *print_alloc_fn(
+static void *print_allocator_fn(
     allocator_t *self, void *ptr, size_t old, size_t size, size_t zalign
 ) {
-    struct print_alloc *alloc = (struct print_alloc *)self;
+    print_allocator_t *alloc = (print_allocator_t *)self;
     void *out = allocator_call(alloc->base, ptr, old, size, zalign);
 
     if (alloc->log) {
@@ -63,11 +63,11 @@ static void *print_alloc_fn(
     return out;
 }
 
-static inline void print_alloc_init(
-    struct print_alloc *out, FILE *log, allocator_t *base
+static inline void print_allocator_init(
+    print_allocator_t *out, FILE *log, allocator_t *base
 ) {
     allocator_fn **interface = (allocator_fn **)&out->alloc.interface;
-    *interface = &print_alloc_fn;
+    *interface = &print_allocator_fn;
     out->base = base;
     out->log = log ? log : stdout;
     if (log) {

@@ -32,25 +32,25 @@
 #include <stddef.h>
 #include <stdint.h>
 
-struct join_alloc {
+typedef struct joined_allocation_t {
     size_t size;
     size_t align;
 
     size_t offset;
     void *buffer;
-};
+} joined_allocation_t;
 
 static size_t join_alloc_align_up(size_t value, size_t alignment) {
     return (value + alignment - 1) & ~(alignment - 1);
 }
 
 static inline void *allocate_joined(
-    allocator_t *alloc, struct join_alloc *blocks, size_t count, size_t *size
+    allocator_t *alloc, joined_allocation_t *blocks, size_t count, size_t *size
 ) {
     if (!blocks || !size || count == 0)
         return NULL;
 
-    struct join_alloc *b, *end = &blocks[count];
+    joined_allocation_t *b, *end = &blocks[count];
     size_t max_align = alignof(max_align_t);
 
     for (b = blocks; b < end; b++) {

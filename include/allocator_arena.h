@@ -62,15 +62,15 @@ struct arena_block {
     uint8_t data[];
 };
 
-struct arena_alloc {
+typedef struct arena_allocator_t {
     struct allocator_t alloc;
     struct arena_block *block;
     allocator_t *base;
     size_t alignment;
-};
+} arena_allocator_t;
 
 /* graphics.stanford.edu/~seander/bithacks.html#RoundUpPowerOf2 */
-static inline size_t arena_alloc_round(size_t v) {
+static inline size_t arena__round(size_t v) {
     if (v <= 1)
         return v;
 
@@ -92,22 +92,22 @@ static inline size_t arena_alloc_round(size_t v) {
 #endif
 
 #ifndef ALLOCATOR_ARENA_GROWTH
-static inline size_t arena_alloc_growth(size_t prev, size_t req) {
+static inline size_t arena__growth(size_t prev, size_t req) {
     size_t size = prev * 2 > req ? prev * 2 : req;
-    size = arena_alloc_round(size);
+    size = arena__round(size);
     return size > ALLOCATOR_ARENA_MIN ? size : ALLOCATOR_ARENA_MIN;
 }
 #endif
 
 #define ALLOCATOR_ARENA_ALIGN(x, a) (((x) + ((a) - 1)) & ~((a) - 1))
 
-static void *arena_alloc_fn(
+static void *arena_allocator_fn(
     allocator_t *self, void *ptr, size_t old, size_t size, size_t zalign
 ) {
     if (!self)
         return NULL;
 
-    struct arena_alloc *arena = (struct arena_alloc *)self;
+    arena_allocator_t *arena = (arena_allocator_t *)self;
     int clearBuffer = zalign & 1;
     size_t align = zalign & ~(size_t)1;
 
@@ -141,7 +141,7 @@ static void *arena_alloc_fn(
         }
 
         if (!block) {
-            size_t next = arena_alloc_growth(prev ? prev->allocated : 0, size);
+            size_t next = arena__growth(prev ? prev->allocated : 0, size);
 
             if (next > SIZE_MAX - sizeof(struct arena_block))
                 return NULL;
@@ -173,20 +173,20 @@ static void *arena_alloc_fn(
     return out;
 }
 
-static inline void arena_alloc_init(
-    struct arena_alloc *arena, allocator_t *base
+static inline void arena_allocator_init(
+    arena_allocator_t *arena, allocator_t *base
 ) {
     if (arena) {
         allocator_fn **interface = (allocator_fn **)&arena->alloc.interface;
-        *interface = &arena_alloc_fn;
+        *interface = &arena_allocator_fn;
         arena->base = base;
         arena->block = NULL;
         arena->alignment = ALLOCATOR_ARENA_ALIGNMENT;
     }
 }
 
-static inline void arena_alloc_buffer(
-    struct arena_alloc *arena, void *buffer, size_t size
+static inline void arena_allocator_buffer(
+    arena_allocator_t *arena, void *buffer, size_t size
 ) {
     if (!arena || !buffer || size == 0)
         return;
@@ -202,7 +202,7 @@ static inline void arena_alloc_buffer(
     }
 }
 
-static inline void arena_alloc_free(struct arena_alloc *arena) {
+static inline void arena_allocator_free(arena_allocator_t *arena) {
     if (arena) {
         struct arena_block *block, *next;
         size_t size = sizeof(struct arena_block);
