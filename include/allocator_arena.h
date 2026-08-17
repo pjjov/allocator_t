@@ -66,10 +66,14 @@ struct arena_alloc {
     struct allocator_t alloc;
     struct arena_block *block;
     allocator_t *base;
+    size_t alignment;
 };
 
 /* graphics.stanford.edu/~seander/bithacks.html#RoundUpPowerOf2 */
 static inline size_t arena_alloc_round(size_t v) {
+    if (v <= 1)
+        return v;
+
     v--;
     v |= v >> 1;
     v |= v >> 2;
@@ -100,10 +104,19 @@ static inline size_t arena_alloc_growth(size_t prev, size_t req) {
 static void *arena_alloc_fn(
     allocator_t *self, void *ptr, size_t old, size_t size, size_t zalign
 ) {
-    if (!self || (zalign & ~(size_t)1) > ALLOCATOR_ARENA_ALIGNMENT)
+    if (!self)
         return NULL;
 
     struct arena_alloc *arena = (struct arena_alloc *)self;
+    int clearBuffer = zalign & 1;
+    size_t align = zalign & ~(size_t)1;
+
+    if (align > arena->alignment)
+        return NULL;
+
+    if ((align & (align - 1)) != 0)
+        return NULL;
+
     struct arena_block *block = arena->block, *prev = NULL;
     void *out = NULL;
 
@@ -120,7 +133,7 @@ static void *arena_alloc_fn(
         return NULL;
 
     if (size > 0) {
-        size = ALLOCATOR_ARENA_ALIGN(size, ALLOCATOR_ARENA_ALIGNMENT);
+        size = ALLOCATOR_ARENA_ALIGN(size, arena->alignment);
 
         while (block && block->used + size > block->allocated) {
             prev = block;
@@ -129,6 +142,10 @@ static void *arena_alloc_fn(
 
         if (!block) {
             size_t next = arena_alloc_growth(prev ? prev->allocated : 0, size);
+
+            if (next > SIZE_MAX - sizeof(struct arena_block))
+                return NULL;
+
             block = allocate(arena->base, sizeof(struct arena_block) + next);
 
             if (!block)
@@ -141,15 +158,15 @@ static void *arena_alloc_fn(
             arena->block = block;
         }
 
-        void *out = (void *)((intptr_t)block->buffer + block->used);
+        out = (char *)block->buffer + block->used;
         block->used += size;
 
         if (ptr) {
             memcpy(out, ptr, old > size ? size : old);
 
-            if (zalign & 1)
-                memset((void *)((intptr_t)out + old), 0, size - old);
-        } else if (zalign & 1)
+            if (clearBuffer && size > old)
+                memset((char *)out + old, 0, size - old);
+        } else if (clearBuffer)
             memset(out, 0, size);
     }
 
@@ -164,6 +181,7 @@ static inline void arena_alloc_init(
         *interface = &arena_alloc_fn;
         arena->base = base;
         arena->block = NULL;
+        arena->alignment = ALLOCATOR_ARENA_ALIGNMENT;
     }
 }
 
@@ -195,6 +213,8 @@ static inline void arena_alloc_free(struct arena_alloc *arena) {
             if (block->buffer == block->data)
                 deallocate(arena->base, block, size + block->allocated);
         }
+
+        arena->block = NULL;
     }
 }
 
