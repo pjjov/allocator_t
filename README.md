@@ -161,6 +161,9 @@ while wrappers for third-party libraries are in headers prefixed with `allocator
 | [allocator.h](./include/allocator.h) | The `allocator_t` interface. |
 | [allocator_aligned.h](./include/allocator_aligned.h) | Wraps allocators to provide aligned allocations. |
 | [allocator_arena.h](./include/allocator_arena.h) | Simple arena/bump allocator implementation. |
+| [allocator_flags.h](./include/allocator_flags.h) | Packs bit flags in the allocator pointer. |
+| [allocator_joined.h](./include/allocator_joined.h) | Joins multiple allocations in a single block. |
+| [allocator_pool.h](./include/allocator_pool.h) | Pools allocations of wanted size and alignment. |
 | [allocator_print.h](./include/allocator_print.h) | Basic debug allocator that prints to a CSV file. |
 
 Currently supported C libraries:
