@@ -17,6 +17,7 @@ install_headers(
     'include/allocator_pool.h',
     'include/allocator_print.h',
     'include/allocator_std.h',
+    'include/allocator_tracker.h',
     'include/allocator.h'
 )
 
@@ -24,7 +25,7 @@ pkg = import('pkgconfig')
 pkg.generate(
   name: 'allocator_t',
   filebase: 'allocator_t',
-  version: '1.1',
+  version: meson.project_version(),
   description: 'Interface for custom allocators in C.',
   subdirs: '',
   extra_cflags: []

@@ -165,6 +165,7 @@ while wrappers for third-party libraries are in headers prefixed with `allocator
 | [allocator_joined.h](./include/allocator_joined.h) | Joins multiple allocations in a single block. |
 | [allocator_pool.h](./include/allocator_pool.h) | Pools allocations of wanted size and alignment. |
 | [allocator_print.h](./include/allocator_print.h) | Basic debug allocator that prints to a CSV file. |
+| [allocator_tracker.h](./include/allocator_tracker.h) | Debug allocator that tracks how the allocator is being called. |
 
 Currently supported C libraries:
 
