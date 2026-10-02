@@ -174,6 +174,33 @@ Currently supported C libraries:
 |---------|--------|
 | C standard library | [allocator_std.h](./core/allocator_std.h) |
 | Brotli | [allocator_brotli.h](./wrappers/allocator_brotli.h) |
+| bzip2 | [allocator_bzip2.h](./wrappers/allocator_bzip2.h) |
+| c-ares | [allocator_cares.h](./wrappers/allocator_cares.h) |
+| cJSON | [allocator_cjson.h](./wrappers/allocator_cjson.h) |
+| libcurl | [allocator_curl.h](./wrappers/allocator_curl.h) |
+| Duktape | [allocator_duktape.h](./wrappers/allocator_duktape.h) |
+| FreeType | [allocator_freetype.h](./wrappers/allocator_freetype.h) |
+| GLFW 3.4+ | [allocator_glfw.h](./wrappers/allocator_glfw.h) |
+| GMP / MPFR | [allocator_gmp.h](./wrappers/allocator_gmp.h) |
+| hiredis | [allocator_hiredis.h](./wrappers/allocator_hiredis.h) |
+| Jansson | [allocator_jansson.h](./wrappers/allocator_jansson.h) |
+| libevent | [allocator_libevent.h](./wrappers/allocator_libevent.h) |
+| libgit2 | [allocator_libgit2.h](./wrappers/allocator_libgit2.h) |
+| liblzma (xz) | [allocator_liblzma.h](./wrappers/allocator_liblzma.h) |
+| libpng | [allocator_libpng.h](./wrappers/allocator_libpng.h) |
+| libuv | [allocator_libuv.h](./wrappers/allocator_libuv.h) |
+| Lua 5.1-5.4 | [allocator_lua.h](./wrappers/allocator_lua.h) |
+| miniaudio | [allocator_miniaudio.h](./wrappers/allocator_miniaudio.h) |
+| nghttp2 | [allocator_nghttp2.h](./wrappers/allocator_nghttp2.h) |
+| OpenSSL 1.1+/3 | [allocator_openssl.h](./wrappers/allocator_openssl.h) |
+| PCRE2 | [allocator_pcre2.h](./wrappers/allocator_pcre2.h) |
+| protobuf-c | [allocator_protobuf_c.h](./wrappers/allocator_protobuf_c.h) |
+| SDL2 / SDL3 | [allocator_sdl.h](./wrappers/allocator_sdl.h) |
+| SQLite | [allocator_sqlite3.h](./wrappers/allocator_sqlite3.h) |
+| Vulkan | [allocator_vulkan.h](./wrappers/allocator_vulkan.h) |
+| YAJL | [allocator_yajl.h](./wrappers/allocator_yajl.h) |
+| zlib | [allocator_zlib.h](./wrappers/allocator_zlib.h) |
+| Zstandard | [allocator_zstd.h](./wrappers/allocator_zstd.h) |
 
 ## License
 
