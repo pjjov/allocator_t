@@ -20,6 +20,7 @@ install_headers(
     'core/allocator_std.h',
     'core/allocator_tracker.h',
     'core/allocator.h',
+    'wrappers/allocator_brotli.h',
 )
 
 pkg = import('pkgconfig')

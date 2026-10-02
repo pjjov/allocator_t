@@ -173,6 +173,7 @@ Currently supported C libraries:
 | Library | Header |
 |---------|--------|
 | C standard library | [allocator_std.h](./core/allocator_std.h) |
+| Brotli | [allocator_brotli.h](./wrappers/allocator_brotli.h) |
 
 ## License
 
