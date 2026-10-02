@@ -158,20 +158,21 @@ while wrappers for third-party libraries are in headers prefixed with `allocator
 
 | Header | Description |
 |--------|-------------|
-| [allocator.h](./include/allocator.h) | The `allocator_t` interface. |
-| [allocator_aligned.h](./include/allocator_aligned.h) | Wraps allocators to provide aligned allocations. |
-| [allocator_arena.h](./include/allocator_arena.h) | Simple arena/bump allocator implementation. |
-| [allocator_flags.h](./include/allocator_flags.h) | Packs bit flags in the allocator pointer. |
-| [allocator_joined.h](./include/allocator_joined.h) | Joins multiple allocations in a single block. |
-| [allocator_pool.h](./include/allocator_pool.h) | Pools allocations of wanted size and alignment. |
-| [allocator_print.h](./include/allocator_print.h) | Basic debug allocator that prints to a CSV file. |
-| [allocator_tracker.h](./include/allocator_tracker.h) | Debug allocator that tracks how the allocator is being called. |
+| [allocator.h](./core/allocator.h) | The `allocator_t` interface. |
+| [allocator_aligned.h](./core/allocator_aligned.h) | Wraps allocators to provide aligned allocations. |
+| [allocator_arena.h](./core/allocator_arena.h) | Simple arena/bump allocator implementation. |
+| [allocator_flags.h](./core/allocator_flags.h) | Packs bit flags in the allocator pointer. |
+| [allocator_joined.h](./core/allocator_joined.h) | Joins multiple allocations in a single block. |
+| [allocator_pool.h](./core/allocator_pool.h) | Pools allocations of wanted size and alignment. |
+| [allocator_print.h](./core/allocator_print.h) | Basic debug allocator that prints to a CSV file. |
+| [allocator_sized.h](./core/allocator_sized.h) | Size-header layer used by most wrappers. |
+| [allocator_tracker.h](./core/allocator_tracker.h) | Debug allocator that tracks how the allocator is being called. |
 
 Currently supported C libraries:
 
 | Library | Header |
 |---------|--------|
-| C standard library | [allocator_std.h](./include/allocator_std.h) |
+| C standard library | [allocator_std.h](./core/allocator_std.h) |
 
 ## License
 

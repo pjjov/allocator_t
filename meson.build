@@ -16,9 +16,10 @@ install_headers(
     'core/allocator_joined.h',
     'core/allocator_pool.h',
     'core/allocator_print.h',
+    'core/allocator_sized.h',
     'core/allocator_std.h',
     'core/allocator_tracker.h',
-    'core/allocator.h'
+    'core/allocator.h',
 )
 
 pkg = import('pkgconfig')
