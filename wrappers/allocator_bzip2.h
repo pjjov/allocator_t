@@ -1,6 +1,6 @@
 /** `allocator_t` - Interface for custom allocators in C.
 
-    `allocator_t` wrapper for bzip2 (libbz2).
+    Wrapper for bzip2 (libbz2).
 
     `bz_stream` carries `bzalloc`, `bzfree` and `opaque`. Call
     `allocator_bzip2_init` on the stream before `BZ2_bzCompressInit` or

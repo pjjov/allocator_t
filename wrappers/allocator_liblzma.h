@@ -32,8 +32,8 @@
     limitations under the License.
 **/
 
-#ifndef ALLOCATOR_LZMA
-#define ALLOCATOR_LZMA
+#ifndef ALLOCATOR_LIBLZMA
+#define ALLOCATOR_LIBLZMA
 
 #ifndef ALLOCATOR_T
     #include "allocator.h"

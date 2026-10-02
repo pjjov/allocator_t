@@ -1,6 +1,6 @@
 /** `allocator_t` - Interface for custom allocators in C.
 
-    `allocator_t` wrapper for Brotli.
+    Wrapper for Brotli.
 
     Creates encoder/decoder instances that use the given allocator.
     Define `ALLOCATOR_BROTLI_NO_ENCODER` or `ALLOCATOR_BROTLI_NO_DECODER`
