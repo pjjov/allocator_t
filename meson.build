@@ -1,7 +1,7 @@
 # SPDX-FileCopyrightText: 2025-2026 Предраг Јовановић
 # SPDX-License-Identifier: Apache-2.0
 
-project('allocator_t', 'c', version: '1.1')
+project('allocator_t', 'c', version: '1.2')
 
 allocator_t_dep = declare_dependency(
     include_directories: include_directories('core', 'wrappers')
