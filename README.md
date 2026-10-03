@@ -103,7 +103,7 @@ void *reallocate_aligned(allocator_t *alloc, void *ptr, size_t old, size_t size,
 These function variants ensure that the address of the returned memory block
 is a multiple of `align`, which should be a power of 2.
 
-Due to complexity, some allocators might not to implement alignment.
+Due to complexity, some allocators might not implement alignment.
 In that case, you can use `allocator_aligned.h` to extend their behaviour.
 
 ### zallocate
@@ -123,8 +123,8 @@ like `calloc`. In case of realloc, only the bits after the old size are changed.
 ```c
 void *xallocate(allocator_t *alloc, size_t size);
 void *xallocate_aligned(allocator_t *alloc, size_t size, size_t align);
-void *xreallocate(allocator_t *alloc, void *old, size_t size);
-void *xreallocate_aligned(allocator_t *alloc, void *old, size_t size, size_t align);
+void *xreallocate(allocator_t *alloc, void *ptr, size_t old, size_t size);
+void *xreallocate_aligned(allocator_t *alloc, void *ptr, size_t old, size_t size, size_t align);
 void *xzallocate(allocator_t *alloc, size_t size);
 void *xzallocate_aligned(allocator_t *alloc, size_t size, size_t align);
 void *xzreallocate(allocator_t *alloc, void *ptr, size_t old, size_t size);
@@ -146,7 +146,7 @@ alter the behaviour of functions in case a `NULL` allocator is passed.
 void deallocate_all(allocator_t *alloc);
 ```
 
-This function asks the allocator to deallocate all of it's memory blocks.
+This function asks the allocator to deallocate all of its memory blocks.
 Be aware, the behaviour is implementation defined and WILL NOT prevent
 memory leaks. This function is intended for 'caching' allocators!
 

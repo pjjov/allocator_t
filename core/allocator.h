@@ -51,13 +51,13 @@ struct allocator_t {
 
 #ifndef allocator_failure
     #include <stdlib.h>
-    #define allocator_failure(m_alloc, m_ptr, m_size, m_old, m_zalign) abort()
+    #define allocator_failure(m_alloc, m_ptr, m_old, m_size, m_zalign) abort()
 #endif
 #ifndef allocator_default
-    #define allocator_default(m_ptr, m_size, m_old, m_zalign) NULL
+    #define allocator_default(m_ptr, m_old, m_size, m_zalign) NULL
 #endif
 
-static void *allocator_call(
+static inline void *allocator_call(
     allocator_t *alloc, void *ptr, size_t old, size_t size, size_t zalign
 ) {
     if (!alloc || !alloc->interface) {
@@ -66,7 +66,7 @@ static void *allocator_call(
     return alloc->interface(alloc, ptr, old, size, zalign);
 }
 
-static void *allocator_callx(
+static inline void *allocator_callx(
     allocator_t *alloc, void *ptr, size_t old, size_t size, size_t zalign
 ) {
     void *res = allocator_call(alloc, ptr, old, size, zalign);
@@ -131,7 +131,7 @@ static inline void *xallocate(allocator_t *alloc, size_t size) {
 static inline void *xallocate_aligned(
     allocator_t *alloc, size_t size, size_t align
 ) {
-    return allocator_callx(alloc, NULL, 0, size, align);
+    return allocator_callx(alloc, NULL, 0, size, align & ~1);
 }
 
 static inline void *xreallocate(
@@ -143,7 +143,7 @@ static inline void *xreallocate(
 static inline void *xreallocate_aligned(
     allocator_t *alloc, void *ptr, size_t old, size_t size, size_t align
 ) {
-    return allocator_callx(alloc, ptr, old, size, align);
+    return allocator_callx(alloc, ptr, old, size, align & ~1);
 }
 
 static inline void *xzallocate(allocator_t *alloc, size_t size) {
