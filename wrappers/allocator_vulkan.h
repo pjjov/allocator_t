@@ -7,10 +7,10 @@
     callbacks (or equivalent) for creating and destroying an object, and may call
     them from several threads, so the allocator has to be thread-safe.
 
-    Vulkan asks for alignments above 16 bytes (up to 64 or more), which are
-    forwarded to `allocate_aligned`: the allocator must support alignment
-    (wrap it with `allocator_aligned.h` otherwise). The alignment given to the
-    reallocation callback is ignored, as Vulkan requires it to match the
+    Vulkan asks for alignments above 16 bytes (64 is common). These use the
+    allocator's `allocate_aligned` when it has one and are emulated otherwise
+    (see `ALLOCATOR_SIZED_POLICY` in allocator_sized.h). The alignment given to
+    the reallocation callback is ignored, as Vulkan requires it to match the
     original allocation. The internal allocation notifications are not set.
 
         VkAllocationCallbacks vk = allocator_vulkan_callbacks(&my_arena);
