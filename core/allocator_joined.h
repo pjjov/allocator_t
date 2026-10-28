@@ -29,12 +29,22 @@
 extern "C" {
 #endif
 
+#ifndef ALLOCATOR_JOINED_TYPEOF
+    #if defined(__STDC_VERSION__) && __STDC_VERSION__ >= 202311L
+        #define ALLOCATOR_JOINED_TYPEOF(x) typeof(x)
+    #else
+        #define ALLOCATOR_JOINED_TYPEOF(x) __typeof__(x)
+    #endif
+#endif
+
 #ifndef ALLOCATOR_H
     #include "allocator.h"
 #endif
 
+#include <stdalign.h>
 #include <stddef.h>
 #include <stdint.h>
+#include <string.h>
 
 typedef struct joined_allocation_t {
     size_t size;
@@ -42,6 +52,8 @@ typedef struct joined_allocation_t {
 
     size_t offset;
     void *buffer;
+
+    void *out; /* optional, address of a pointer that receives `buffer` */
 } joined_allocation_t;
 
 static size_t join_alloc_align_up(size_t value, size_t alignment) {
@@ -82,12 +94,46 @@ static inline void *allocate_joined(
 
     uintptr_t base = join_alloc_align_up((uintptr_t)raw, max_align);
 
-    for (b = blocks; b < end; b++)
+    for (b = blocks; b < end; b++) {
         b->buffer = (void *)(base + b->offset);
+
+        if (b->out)
+            memcpy(b->out, &b->buffer, sizeof(void *));
+    }
 
     *size = total;
     return raw;
 }
+
+/* Describes an array of `n` objects for `ALLOCATE_JOINED`, where `p` is the
+   address of the pointer that will receive the block. */
+#define JOINED_ARRAY(p, n)                              \
+    { .size = (size_t)(n) * sizeof(**(p)),              \
+      .align = alignof(ALLOCATOR_JOINED_TYPEOF(**(p))), \
+      .out = (p) }
+
+/* Describes a single object for `ALLOCATE_JOINED`. */
+#define JOINED_BLOCK(p) JOINED_ARRAY(p, 1)
+
+/* Allocates all `JOINED_BLOCK`s and `JOINED_ARRAY`s in a single allocation
+   and points each of them at its block. Evaluates to the raw buffer to
+   deallocate, or NULL on failure (the pointers are left untouched).
+
+       int *a;
+       struct example *b;
+       size_t size;
+       void *buffer = ALLOCATE_JOINED(
+           alloc, &size, JOINED_ARRAY(&a, 16), JOINED_BLOCK(&b)
+       );
+*/
+#define ALLOCATE_JOINED(alloc, size, ...)               \
+    allocate_joined(                                    \
+        (alloc),                                        \
+        (joined_allocation_t[]) { __VA_ARGS__ },        \
+        sizeof((joined_allocation_t[]) { __VA_ARGS__ }) \
+            / sizeof(joined_allocation_t),              \
+        (size)                                          \
+    )
 
 #ifdef __cplusplus
 }
