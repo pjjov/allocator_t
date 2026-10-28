@@ -57,22 +57,26 @@
     #include <cjson/cJSON.h>
 #endif
 
+#ifndef ALLOCATOR_API
+    #define ALLOCATOR_API static inline
+#endif
+
 #ifdef __cplusplus
 extern "C" {
 #endif
 
 static allocator_t *allocator_cjson_current_ = NULL;
 
-static inline void *CJSON_CDECL allocator_cjson_malloc_fn(size_t size) {
+ALLOCATOR_API void *CJSON_CDECL allocator_cjson_malloc_fn(size_t size) {
     return allocator_sized_alloc(allocator_cjson_current_, size, 0, 0);
 }
 
-static inline void CJSON_CDECL allocator_cjson_free_fn(void *ptr) {
+ALLOCATOR_API void CJSON_CDECL allocator_cjson_free_fn(void *ptr) {
     allocator_sized_free(allocator_cjson_current_, ptr);
 }
 
 /** `cJSON_InitHooks` using `alloc`. */
-static inline int allocator_cjson_init(allocator_t *alloc) {
+ALLOCATOR_API int allocator_cjson_init(allocator_t *alloc) {
     cJSON_Hooks hooks;
 
     if (!alloc)

@@ -45,28 +45,31 @@
 
 #include "miniaudio.h"
 
+#ifndef ALLOCATOR_API
+    #define ALLOCATOR_API static inline
+#endif
+
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-static inline void *allocator_miniaudio_malloc_fn(size_t size, void *user) {
+ALLOCATOR_API void *allocator_miniaudio_malloc_fn(size_t size, void *user) {
     return allocator_sized_alloc((allocator_t *)user, size, 0, 0);
 }
 
-static inline void *allocator_miniaudio_realloc_fn(
+ALLOCATOR_API void *allocator_miniaudio_realloc_fn(
     void *ptr, size_t size, void *user
 ) {
     return allocator_sized_realloc((allocator_t *)user, ptr, size, 0);
 }
 
-static inline void allocator_miniaudio_free_fn(void *ptr, void *user) {
+ALLOCATOR_API void allocator_miniaudio_free_fn(void *ptr, void *user) {
     allocator_sized_free((allocator_t *)user, ptr);
 }
 
 /** Allocation callbacks using `alloc`. */
-static inline ma_allocation_callbacks allocator_miniaudio_callbacks(
-    allocator_t *alloc
-) {
+ALLOCATOR_API ma_allocation_callbacks
+allocator_miniaudio_callbacks(allocator_t *alloc) {
     ma_allocation_callbacks cb;
     cb.pUserData = alloc;
     cb.onMalloc = &allocator_miniaudio_malloc_fn;

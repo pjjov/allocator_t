@@ -24,6 +24,10 @@
 #ifndef ALLOCATOR_FLAGS_H
 #define ALLOCATOR_FLAGS_H
 
+#ifndef ALLOCATOR_API
+    #define ALLOCATOR_API static inline
+#endif
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -56,12 +60,12 @@ extern "C" {
 
 #define ALLOCATOR_FLAGS_MASK ((uintptr_t)(ALLOCATOR_ALIGNOF(allocator_t) - 1))
 
-static inline allocator_t *allocator_flags_mask(allocator_t *allocator) {
+ALLOCATOR_API allocator_t *allocator_flags_mask(allocator_t *allocator) {
     uintptr_t bits = (uintptr_t)allocator;
     return (allocator_t *)(bits & ~ALLOCATOR_FLAGS_MASK);
 }
 
-static inline allocator_t *allocator_flags_set(
+ALLOCATOR_API allocator_t *allocator_flags_set(
     allocator_t *allocator, uintptr_t flags
 ) {
     uintptr_t bits = (uintptr_t)allocator;
@@ -71,7 +75,7 @@ static inline allocator_t *allocator_flags_set(
     return (allocator_t *)result;
 }
 
-static inline uintptr_t allocator_flags_get(const allocator_t *allocator) {
+ALLOCATOR_API uintptr_t allocator_flags_get(const allocator_t *allocator) {
     return (uintptr_t)allocator & ALLOCATOR_FLAGS_MASK;
 }
 

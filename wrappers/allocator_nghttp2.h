@@ -40,32 +40,36 @@
 
 #include <nghttp2/nghttp2.h>
 
+#ifndef ALLOCATOR_API
+    #define ALLOCATOR_API static inline
+#endif
+
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-static inline void *allocator_nghttp2_malloc_fn(size_t size, void *data) {
+ALLOCATOR_API void *allocator_nghttp2_malloc_fn(size_t size, void *data) {
     return allocator_sized_alloc((allocator_t *)data, size, 0, 0);
 }
 
-static inline void allocator_nghttp2_free_fn(void *ptr, void *data) {
+ALLOCATOR_API void allocator_nghttp2_free_fn(void *ptr, void *data) {
     allocator_sized_free((allocator_t *)data, ptr);
 }
 
-static inline void *allocator_nghttp2_calloc_fn(
+ALLOCATOR_API void *allocator_nghttp2_calloc_fn(
     size_t nmemb, size_t size, void *data
 ) {
     return allocator_sized_calloc((allocator_t *)data, nmemb, size);
 }
 
-static inline void *allocator_nghttp2_realloc_fn(
+ALLOCATOR_API void *allocator_nghttp2_realloc_fn(
     void *ptr, size_t size, void *data
 ) {
     return allocator_sized_realloc((allocator_t *)data, ptr, size, 0);
 }
 
 /** Memory functions for the `nghttp2_*_new3` constructors. */
-static inline nghttp2_mem allocator_nghttp2_mem(allocator_t *alloc) {
+ALLOCATOR_API nghttp2_mem allocator_nghttp2_mem(allocator_t *alloc) {
     nghttp2_mem mem;
     memset(&mem, 0, sizeof mem);
     mem.mem_user_data = alloc;

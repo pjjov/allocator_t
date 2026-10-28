@@ -27,6 +27,10 @@
 #ifndef ALLOCATOR_STD
 #define ALLOCATOR_STD
 
+#ifndef ALLOCATOR_API
+    #define ALLOCATOR_API static inline
+#endif
+
 #ifdef __cplusplus
 extern "C" {
 #endif

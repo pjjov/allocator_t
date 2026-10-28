@@ -52,17 +52,21 @@
 
 #include <sqlite3.h>
 
+#ifndef ALLOCATOR_API
+    #define ALLOCATOR_API static inline
+#endif
+
 #ifdef __cplusplus
 extern "C" {
 #endif
 
 static allocator_t *allocator_sqlite3_current_ = NULL;
 
-static inline int allocator_sqlite3_round_(int n) {
+ALLOCATOR_API int allocator_sqlite3_round_(int n) {
     return (int)(((unsigned)n + 7u) & ~7u);
 }
 
-static inline void *allocator_sqlite3_malloc_fn(int n) {
+ALLOCATOR_API void *allocator_sqlite3_malloc_fn(int n) {
     if (n <= 0)
         return NULL;
     return allocator_sized_alloc(
@@ -70,11 +74,11 @@ static inline void *allocator_sqlite3_malloc_fn(int n) {
     );
 }
 
-static inline void allocator_sqlite3_free_fn(void *ptr) {
+ALLOCATOR_API void allocator_sqlite3_free_fn(void *ptr) {
     allocator_sized_free(allocator_sqlite3_current_, ptr);
 }
 
-static inline void *allocator_sqlite3_realloc_fn(void *ptr, int n) {
+ALLOCATOR_API void *allocator_sqlite3_realloc_fn(void *ptr, int n) {
     if (n <= 0)
         return NULL;
     return allocator_sized_realloc(
@@ -82,26 +86,26 @@ static inline void *allocator_sqlite3_realloc_fn(void *ptr, int n) {
     );
 }
 
-static inline int allocator_sqlite3_size_fn(void *ptr) {
+ALLOCATOR_API int allocator_sqlite3_size_fn(void *ptr) {
     return (int)allocator_sized_size(ptr);
 }
 
-static inline int allocator_sqlite3_roundup_fn(int n) {
+ALLOCATOR_API int allocator_sqlite3_roundup_fn(int n) {
     return allocator_sqlite3_round_(n);
 }
 
-static inline int allocator_sqlite3_init_fn(void *app_data) {
+ALLOCATOR_API int allocator_sqlite3_init_fn(void *app_data) {
     (void)app_data;
     return SQLITE_OK;
 }
 
-static inline void allocator_sqlite3_shutdown_fn(void *app_data) {
+ALLOCATOR_API void allocator_sqlite3_shutdown_fn(void *app_data) {
     (void)app_data;
 }
 
 /** `sqlite3_config(SQLITE_CONFIG_MALLOC, ...)` using `alloc`.
     Returns an SQLite result code. */
-static inline int allocator_sqlite3_config(allocator_t *alloc) {
+ALLOCATOR_API int allocator_sqlite3_config(allocator_t *alloc) {
     sqlite3_mem_methods methods;
     allocator_t *previous = allocator_sqlite3_current_;
     int rc;

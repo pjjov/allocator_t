@@ -31,6 +31,10 @@
 #ifndef ALLOCATOR_ALIGNED
 #define ALLOCATOR_ALIGNED
 
+#ifndef ALLOCATOR_API
+    #define ALLOCATOR_API static inline
+#endif
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -119,7 +123,7 @@ static void *align_allocator_fn(
     return out;
 }
 
-static inline void align_allocator_init(
+ALLOCATOR_API void align_allocator_init(
     align_allocator_t *out, allocator_t *base, size_t min
 ) {
     if (out) {

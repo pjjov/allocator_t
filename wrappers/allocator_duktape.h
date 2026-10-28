@@ -38,26 +38,30 @@
 
 #include <duktape.h>
 
+#ifndef ALLOCATOR_API
+    #define ALLOCATOR_API static inline
+#endif
+
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-static inline void *allocator_duk_alloc_fn(void *udata, duk_size_t size) {
+ALLOCATOR_API void *allocator_duk_alloc_fn(void *udata, duk_size_t size) {
     return allocator_sized_alloc((allocator_t *)udata, (size_t)size, 0, 0);
 }
 
-static inline void *allocator_duk_realloc_fn(
+ALLOCATOR_API void *allocator_duk_realloc_fn(
     void *udata, void *ptr, duk_size_t size
 ) {
     return allocator_sized_realloc((allocator_t *)udata, ptr, (size_t)size, 0);
 }
 
-static inline void allocator_duk_free_fn(void *udata, void *ptr) {
+ALLOCATOR_API void allocator_duk_free_fn(void *udata, void *ptr) {
     allocator_sized_free((allocator_t *)udata, ptr);
 }
 
 /** `duk_create_heap` using `alloc`. `fatal_handler` may be NULL. */
-static inline duk_context *allocator_duk_create_heap(
+ALLOCATOR_API duk_context *allocator_duk_create_heap(
     allocator_t *alloc, duk_fatal_function fatal_handler
 ) {
     return duk_create_heap(

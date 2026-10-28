@@ -46,21 +46,25 @@
     #include <brotli/decode.h>
 #endif
 
+#ifndef ALLOCATOR_API
+    #define ALLOCATOR_API static inline
+#endif
+
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-static inline void *allocator_brotli_alloc_fn(void *opaque, size_t size) {
+ALLOCATOR_API void *allocator_brotli_alloc_fn(void *opaque, size_t size) {
     return allocator_sized_alloc((allocator_t *)opaque, size, 0, 0);
 }
 
-static inline void allocator_brotli_free_fn(void *opaque, void *address) {
+ALLOCATOR_API void allocator_brotli_free_fn(void *opaque, void *address) {
     allocator_sized_free((allocator_t *)opaque, address);
 }
 
 #ifndef ALLOCATOR_BROTLI_NO_ENCODER
 /** `BrotliEncoderCreateInstance` using `alloc`. Returns NULL on failure. */
-static inline BrotliEncoderState *allocator_brotli_encoder_create(
+ALLOCATOR_API BrotliEncoderState *allocator_brotli_encoder_create(
     allocator_t *alloc
 ) {
     return BrotliEncoderCreateInstance(
@@ -71,7 +75,7 @@ static inline BrotliEncoderState *allocator_brotli_encoder_create(
 
 #ifndef ALLOCATOR_BROTLI_NO_DECODER
 /** `BrotliDecoderCreateInstance` using `alloc`. Returns NULL on failure. */
-static inline BrotliDecoderState *allocator_brotli_decoder_create(
+ALLOCATOR_API BrotliDecoderState *allocator_brotli_decoder_create(
     allocator_t *alloc
 ) {
     return BrotliDecoderCreateInstance(

@@ -51,34 +51,38 @@
 
 #include <hiredis/alloc.h>
 
+#ifndef ALLOCATOR_API
+    #define ALLOCATOR_API static inline
+#endif
+
 #ifdef __cplusplus
 extern "C" {
 #endif
 
 static allocator_t *allocator_hiredis_current_ = NULL;
 
-static inline void *allocator_hiredis_malloc_fn(size_t size) {
+ALLOCATOR_API void *allocator_hiredis_malloc_fn(size_t size) {
     return allocator_sized_alloc(allocator_hiredis_current_, size, 0, 0);
 }
 
-static inline void *allocator_hiredis_calloc_fn(size_t nmemb, size_t size) {
+ALLOCATOR_API void *allocator_hiredis_calloc_fn(size_t nmemb, size_t size) {
     return allocator_sized_calloc(allocator_hiredis_current_, nmemb, size);
 }
 
-static inline void *allocator_hiredis_realloc_fn(void *ptr, size_t size) {
+ALLOCATOR_API void *allocator_hiredis_realloc_fn(void *ptr, size_t size) {
     return allocator_sized_realloc(allocator_hiredis_current_, ptr, size, 0);
 }
 
-static inline char *allocator_hiredis_strdup_fn(const char *str) {
+ALLOCATOR_API char *allocator_hiredis_strdup_fn(const char *str) {
     return allocator_sized_strdup(allocator_hiredis_current_, str);
 }
 
-static inline void allocator_hiredis_free_fn(void *ptr) {
+ALLOCATOR_API void allocator_hiredis_free_fn(void *ptr) {
     allocator_sized_free(allocator_hiredis_current_, ptr);
 }
 
 /** `hiredisSetAllocators` using `alloc`. */
-static inline int allocator_hiredis_set(allocator_t *alloc) {
+ALLOCATOR_API int allocator_hiredis_set(allocator_t *alloc) {
     hiredisAllocFuncs funcs;
 
     if (!alloc)

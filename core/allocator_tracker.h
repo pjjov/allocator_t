@@ -46,6 +46,10 @@
 
 #include <string.h>
 
+#ifndef ALLOCATOR_API
+    #define ALLOCATOR_API static inline
+#endif
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -88,7 +92,7 @@ struct tracker__header {
     enough for the header itself, and enough to satisfy either the
     caller's requested alignment or `ALLOCATOR_TRACKER_ALIGNMENT`,
     whichever is larger. */
-static inline size_t tracker__offset(size_t align) {
+ALLOCATOR_API size_t tracker__offset(size_t align) {
     size_t offset = align > ALLOCATOR_TRACKER_ALIGNMENT
         ? align
         : ALLOCATOR_TRACKER_ALIGNMENT;
@@ -198,7 +202,7 @@ static void *tracker_allocator_fn(
     as any other `allocator_t`). Counters start at zero and `budget`
     starts unlimited (-1); set `out->budget` afterwards to inject
     allocation failures. */
-static inline void tracker_allocator_init(
+ALLOCATOR_API void tracker_allocator_init(
     tracker_allocator_t *out, allocator_t *base
 ) {
     if (!out)
@@ -219,7 +223,7 @@ static inline void tracker_allocator_init(
 /** Zeroes every counter (including `badSizes`) without touching `base`
     or `budget`, or freeing anything still live. Useful between cases in
     the same test that should each start from a clean count. */
-static inline void tracker_allocator_reset(tracker_allocator_t *out) {
+ALLOCATOR_API void tracker_allocator_reset(tracker_allocator_t *out) {
     if (!out)
         return;
 

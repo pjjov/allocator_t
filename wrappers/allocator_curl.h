@@ -52,36 +52,39 @@
 
 #include <curl/curl.h>
 
+#ifndef ALLOCATOR_API
+    #define ALLOCATOR_API static inline
+#endif
+
 #ifdef __cplusplus
 extern "C" {
 #endif
 
 static allocator_t *allocator_curl_current_ = NULL;
 
-static inline void *allocator_curl_malloc_fn(size_t size) {
+ALLOCATOR_API void *allocator_curl_malloc_fn(size_t size) {
     return allocator_sized_alloc(allocator_curl_current_, size, 0, 0);
 }
 
-static inline void allocator_curl_free_fn(void *ptr) {
+ALLOCATOR_API void allocator_curl_free_fn(void *ptr) {
     allocator_sized_free(allocator_curl_current_, ptr);
 }
 
-static inline void *allocator_curl_realloc_fn(void *ptr, size_t size) {
+ALLOCATOR_API void *allocator_curl_realloc_fn(void *ptr, size_t size) {
     return allocator_sized_realloc(allocator_curl_current_, ptr, size, 0);
 }
 
-static inline char *allocator_curl_strdup_fn(const char *str) {
+ALLOCATOR_API char *allocator_curl_strdup_fn(const char *str) {
     return allocator_sized_strdup(allocator_curl_current_, str);
 }
 
-static inline void *allocator_curl_calloc_fn(size_t nmemb, size_t size) {
+ALLOCATOR_API void *allocator_curl_calloc_fn(size_t nmemb, size_t size) {
     return allocator_sized_calloc(allocator_curl_current_, nmemb, size);
 }
 
 /** `curl_global_init_mem` using `alloc`. */
-static inline CURLcode allocator_curl_global_init(
-    long flags, allocator_t *alloc
-) {
+ALLOCATOR_API CURLcode
+allocator_curl_global_init(long flags, allocator_t *alloc) {
     allocator_t *previous = allocator_curl_current_;
     CURLcode rc;
 

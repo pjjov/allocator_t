@@ -26,6 +26,10 @@
 #ifndef ALLOCATOR_POOL_H
 #define ALLOCATOR_POOL_H
 
+#ifndef ALLOCATOR_API
+    #define ALLOCATOR_API static inline
+#endif
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -94,7 +98,7 @@ typedef struct pool_allocator_t {
 
 #define POOL__BITS_PER_WORD (sizeof(uint64_t) * 8)
 
-static inline size_t pool__align_up(size_t n, size_t align) {
+ALLOCATOR_API size_t pool__align_up(size_t n, size_t align) {
     if (align < 1)
         align = 1;
     return (n + (align - 1)) & ~(align - 1);
@@ -103,7 +107,7 @@ static inline size_t pool__align_up(size_t n, size_t align) {
 /** pool__align_up uses a bitmask trick that only works for power-of-two
     alignments; round whatever the caller passed up to the next one so a
     non-power-of-two itemAlign (e.g. 3) can't silently corrupt offsets. */
-static inline size_t pool__round_pow2(size_t n) {
+ALLOCATOR_API size_t pool__round_pow2(size_t n) {
     size_t p = 1;
     if (n <= 1)
         return 1;
@@ -112,11 +116,11 @@ static inline size_t pool__round_pow2(size_t n) {
     return p;
 }
 
-static inline size_t pool__words(size_t capacity) {
+ALLOCATOR_API size_t pool__words(size_t capacity) {
     return (capacity + POOL__BITS_PER_WORD - 1) / POOL__BITS_PER_WORD;
 }
 
-static inline size_t pool__ctz64(uint64_t x) {
+ALLOCATOR_API size_t pool__ctz64(uint64_t x) {
 #if defined(__GNUC__) || defined(__clang__)
     return (size_t)__builtin_ctzll(x);
 #else
@@ -129,18 +133,18 @@ static inline size_t pool__ctz64(uint64_t x) {
 #endif
 }
 
-static inline int pool__test(struct pool_block *block, size_t index) {
+ALLOCATOR_API int pool__test(struct pool_block *block, size_t index) {
     return (int)((block->meta[index / POOL__BITS_PER_WORD]
                   >> (index % POOL__BITS_PER_WORD))
                  & 1);
 }
 
-static inline void pool__set(struct pool_block *block, size_t index) {
+ALLOCATOR_API void pool__set(struct pool_block *block, size_t index) {
     block->meta[index / POOL__BITS_PER_WORD]
         |= ((uint64_t)1 << (index % POOL__BITS_PER_WORD));
 }
 
-static inline void pool__clear(struct pool_block *block, size_t index) {
+ALLOCATOR_API void pool__clear(struct pool_block *block, size_t index) {
     block->meta[index / POOL__BITS_PER_WORD] &= ~(
         (uint64_t)1 << (index % POOL__BITS_PER_WORD)
     );
@@ -175,14 +179,13 @@ static size_t pool__find_free_in(struct pool_block *block) {
 }
 
 /** Byte offset of slot data from the start of a block's meta buffer. */
-static inline size_t pool__data_offset(
-    pool_allocator_t *pool, size_t capacity
-) {
+ALLOCATOR_API size_t
+pool__data_offset(pool_allocator_t *pool, size_t capacity) {
     size_t bitsetBytes = pool__words(capacity) * sizeof(uint64_t);
     return pool__align_up(bitsetBytes, pool->itemAlign);
 }
 
-static inline void *pool__slot(
+ALLOCATOR_API void *pool__slot(
     pool_allocator_t *pool, struct pool_block *block, size_t index
 ) {
     return (char *)block->meta + pool__data_offset(pool, block->capacity)
@@ -191,14 +194,13 @@ static inline void *pool__slot(
 
 /** Total size of the single allocation backing a block of this capacity
     (bitset + slot data together). */
-static inline size_t pool__block_bytes(
-    pool_allocator_t *pool, size_t capacity
-) {
+ALLOCATOR_API size_t
+pool__block_bytes(pool_allocator_t *pool, size_t capacity) {
     return pool__data_offset(pool, capacity) + pool->itemSize * capacity;
 }
 
 /** Whether a request of this size/align can live in one slot. */
-static inline int pool__fits(
+ALLOCATOR_API int pool__fits(
     pool_allocator_t *pool, size_t size, size_t align
 ) {
     if (size > pool->itemSize)

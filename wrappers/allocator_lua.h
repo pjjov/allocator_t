@@ -44,11 +44,15 @@
 
 #include <lua.h>
 
+#ifndef ALLOCATOR_API
+    #define ALLOCATOR_API static inline
+#endif
+
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-static inline void *allocator_lua_fn(
+ALLOCATOR_API void *allocator_lua_fn(
     void *ud, void *ptr, size_t osize, size_t nsize
 ) {
     allocator_t *alloc = (allocator_t *)ud;
@@ -63,7 +67,7 @@ static inline void *allocator_lua_fn(
 }
 
 /** `lua_newstate` using `alloc`. Returns NULL on failure. */
-static inline lua_State *allocator_lua_newstate(allocator_t *alloc) {
+ALLOCATOR_API lua_State *allocator_lua_newstate(allocator_t *alloc) {
     return lua_newstate(&allocator_lua_fn, alloc);
 }
 

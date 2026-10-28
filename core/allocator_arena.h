@@ -39,6 +39,10 @@
 #ifndef ALLOCATOR_ARENA_H
 #define ALLOCATOR_ARENA_H
 
+#ifndef ALLOCATOR_API
+    #define ALLOCATOR_API static inline
+#endif
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -74,7 +78,7 @@ typedef struct arena_allocator_t {
 } arena_allocator_t;
 
 /* graphics.stanford.edu/~seander/bithacks.html#RoundUpPowerOf2 */
-static inline size_t arena__round(size_t v) {
+ALLOCATOR_API size_t arena__round(size_t v) {
     if (v <= 1)
         return v;
 
@@ -96,7 +100,7 @@ static inline size_t arena__round(size_t v) {
 #endif
 
 #ifndef ALLOCATOR_ARENA_GROWTH
-static inline size_t arena__growth(size_t prev, size_t req) {
+ALLOCATOR_API size_t arena__growth(size_t prev, size_t req) {
     size_t size = prev * 2 > req ? prev * 2 : req;
     size = arena__round(size);
     return size > ALLOCATOR_ARENA_MIN ? size : ALLOCATOR_ARENA_MIN;
@@ -177,7 +181,7 @@ static void *arena_allocator_fn(
     return out;
 }
 
-static inline void arena_allocator_init(
+ALLOCATOR_API void arena_allocator_init(
     arena_allocator_t *arena, allocator_t *base
 ) {
     if (arena) {
@@ -189,7 +193,7 @@ static inline void arena_allocator_init(
     }
 }
 
-static inline void arena_allocator_buffer(
+ALLOCATOR_API void arena_allocator_buffer(
     arena_allocator_t *arena, void *buffer, size_t size
 ) {
     if (!arena || !buffer || size == 0)
@@ -206,7 +210,7 @@ static inline void arena_allocator_buffer(
     }
 }
 
-static inline void arena_allocator_free(arena_allocator_t *arena) {
+ALLOCATOR_API void arena_allocator_free(arena_allocator_t *arena) {
     if (arena) {
         struct arena_block *block, *next;
         size_t size = sizeof(struct arena_block);
@@ -214,8 +218,11 @@ static inline void arena_allocator_free(arena_allocator_t *arena) {
         for (block = arena->block; block; block = next) {
             next = block->next;
 
-            if (block->buffer == block->data)
-                deallocate(arena->base, block, size + block->allocated);
+            deallocate(
+                arena->base,
+                block,
+                block->buffer == block->data ? size + block->allocated : size
+            );
         }
 
         arena->block = NULL;

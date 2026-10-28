@@ -46,24 +46,27 @@
         "allocator_libpng.h requires libpng built with PNG_USER_MEM_SUPPORTED"
 #endif
 
+#ifndef ALLOCATOR_API
+    #define ALLOCATOR_API static inline
+#endif
+
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-static inline png_voidp allocator_libpng_malloc_fn(
-    png_structp png, png_alloc_size_t size
-) {
+ALLOCATOR_API png_voidp
+allocator_libpng_malloc_fn(png_structp png, png_alloc_size_t size) {
     return allocator_sized_alloc(
         (allocator_t *)png_get_mem_ptr(png), (size_t)size, 0, 0
     );
 }
 
-static inline void allocator_libpng_free_fn(png_structp png, png_voidp ptr) {
+ALLOCATOR_API void allocator_libpng_free_fn(png_structp png, png_voidp ptr) {
     allocator_sized_free((allocator_t *)png_get_mem_ptr(png), ptr);
 }
 
 /** `png_create_read_struct` using `alloc`. */
-static inline png_structp allocator_libpng_create_read_struct(
+ALLOCATOR_API png_structp allocator_libpng_create_read_struct(
     png_const_charp user_png_ver,
     png_voidp error_ptr,
     png_error_ptr error_fn,
@@ -82,7 +85,7 @@ static inline png_structp allocator_libpng_create_read_struct(
 }
 
 /** `png_create_write_struct` using `alloc`. */
-static inline png_structp allocator_libpng_create_write_struct(
+ALLOCATOR_API png_structp allocator_libpng_create_write_struct(
     png_const_charp user_png_ver,
     png_voidp error_ptr,
     png_error_ptr error_fn,

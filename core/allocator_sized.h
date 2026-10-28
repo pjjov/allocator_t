@@ -84,6 +84,10 @@
 #include <stdint.h>
 #include <string.h>
 
+#ifndef ALLOCATOR_API
+    #define ALLOCATOR_API static inline
+#endif
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -100,7 +104,7 @@ extern "C" {
     #define ALLOCATOR_SIZED_POLICY ALLOCATOR_SIZED_POLICY_AUTO
 #endif
 
-#define ALLOCATOR_SIZED_MAX_ ((size_t) - 1)
+#define ALLOCATOR_SIZED_MAX_ ((size_t)-1)
 #define ALLOCATOR_SIZED_MAX_ALIGN_ ((size_t)1 << 30)
 
 #define ALLOCATOR_SIZED_PLAIN_ 0
@@ -108,22 +112,22 @@ extern "C" {
 #define ALLOCATOR_SIZED_EMULATED_ 2
 
 typedef struct allocator_sized_header {
-    size_t size;          /* size requested by the caller */
-    uint32_t offset;      /* distance from the underlying block to the pointer */
-    unsigned char log2;   /* log2 of the alignment of the pointer */
-    unsigned char mode;   /* ALLOCATOR_SIZED_{PLAIN,NATIVE,EMULATED}_ */
+    size_t size;        /* size requested by the caller */
+    uint32_t offset;    /* distance from the underlying block to the pointer */
+    unsigned char log2; /* log2 of the alignment of the pointer */
+    unsigned char mode; /* ALLOCATOR_SIZED_{PLAIN,NATIVE,EMULATED}_ */
 } allocator_sized_header;
 
 /* The header has to fit in front of the pointer. */
 typedef char allocator_sized_header_fits_
     [sizeof(allocator_sized_header) <= ALLOCATOR_SIZED_ALIGN ? 1 : -1];
 
-static inline allocator_sized_header *allocator_sized_header_(void *ptr) {
+ALLOCATOR_API allocator_sized_header *allocator_sized_header_(void *ptr) {
     return (allocator_sized_header *)((unsigned char *)ptr
                                       - sizeof(allocator_sized_header));
 }
 
-static inline unsigned char allocator_sized_log2_(size_t align) {
+ALLOCATOR_API unsigned char allocator_sized_log2_(size_t align) {
     unsigned char n = 0;
     while (align > 1) {
         align >>= 1;
@@ -133,9 +137,8 @@ static inline unsigned char allocator_sized_log2_(size_t align) {
 }
 
 /* Size of the underlying block for a user size. 0 on overflow. */
-static inline size_t allocator_sized_total_(
-    unsigned char mode, size_t align, size_t size
-) {
+ALLOCATOR_API size_t
+allocator_sized_total_(unsigned char mode, size_t align, size_t size) {
     size_t total, rest;
 
     if (mode == ALLOCATOR_SIZED_PLAIN_) {
@@ -160,9 +163,12 @@ static inline size_t allocator_sized_total_(
     return size + align + ALLOCATOR_SIZED_ALIGN;
 }
 
-static inline void *allocator_sized_finish_(
-    unsigned char *base, unsigned char *user, size_t size,
-    unsigned char log2, unsigned char mode
+ALLOCATOR_API void *allocator_sized_finish_(
+    unsigned char *base,
+    unsigned char *user,
+    size_t size,
+    unsigned char log2,
+    unsigned char mode
 ) {
     allocator_sized_header *header = allocator_sized_header_(user);
     header->size = size;
@@ -172,7 +178,7 @@ static inline void *allocator_sized_finish_(
     return user;
 }
 
-static inline void *allocator_sized_alloc_plain_(
+ALLOCATOR_API void *allocator_sized_alloc_plain_(
     allocator_t *alloc, size_t size, int zero
 ) {
     size_t total = allocator_sized_total_(ALLOCATOR_SIZED_PLAIN_, 0, size);
@@ -184,12 +190,16 @@ static inline void *allocator_sized_alloc_plain_(
     if (!base)
         return NULL;
     return allocator_sized_finish_(
-        base, base + ALLOCATOR_SIZED_ALIGN, size,
-        allocator_sized_log2_(ALLOCATOR_SIZED_ALIGN), ALLOCATOR_SIZED_PLAIN_);
+        base,
+        base + ALLOCATOR_SIZED_ALIGN,
+        size,
+        allocator_sized_log2_(ALLOCATOR_SIZED_ALIGN),
+        ALLOCATOR_SIZED_PLAIN_
+    );
 }
 
 #if ALLOCATOR_SIZED_POLICY != ALLOCATOR_SIZED_POLICY_EMULATE
-static inline void *allocator_sized_alloc_native_(
+ALLOCATOR_API void *allocator_sized_alloc_native_(
     allocator_t *alloc, size_t size, size_t align, int zero
 ) {
     size_t total = allocator_sized_total_(ALLOCATOR_SIZED_NATIVE_, align, size);
@@ -205,15 +215,21 @@ static inline void *allocator_sized_alloc_native_(
         return NULL;
     }
     return allocator_sized_finish_(
-        base, base + align, size, allocator_sized_log2_(align),
-        ALLOCATOR_SIZED_NATIVE_);
+        base,
+        base + align,
+        size,
+        allocator_sized_log2_(align),
+        ALLOCATOR_SIZED_NATIVE_
+    );
 }
 #endif
 
-static inline void *allocator_sized_alloc_emulated_(
+ALLOCATOR_API void *allocator_sized_alloc_emulated_(
     allocator_t *alloc, size_t size, size_t align, int zero
 ) {
-    size_t total = allocator_sized_total_(ALLOCATOR_SIZED_EMULATED_, align, size);
+    size_t total = allocator_sized_total_(
+        ALLOCATOR_SIZED_EMULATED_, align, size
+    );
     unsigned char *base;
     uintptr_t addr;
     if (!total)
@@ -223,25 +239,29 @@ static inline void *allocator_sized_alloc_emulated_(
     if (!base)
         return NULL;
     addr = ((uintptr_t)base + ALLOCATOR_SIZED_ALIGN + align - 1)
-           & ~((uintptr_t)align - 1);
+        & ~((uintptr_t)align - 1);
     return allocator_sized_finish_(
-        base, base + (addr - (uintptr_t)base), size,
-        allocator_sized_log2_(align), ALLOCATOR_SIZED_EMULATED_);
+        base,
+        base + (addr - (uintptr_t)base),
+        size,
+        allocator_sized_log2_(align),
+        ALLOCATOR_SIZED_EMULATED_
+    );
 }
 
 /** Size that was requested for the block `ptr` (0 for NULL). */
-static inline size_t allocator_sized_size(const void *ptr) {
+ALLOCATOR_API size_t allocator_sized_size(const void *ptr) {
     return ptr ? allocator_sized_header_((void *)ptr)->size : 0;
 }
 
 /** Alignment the block `ptr` is guaranteed to have (0 for NULL). */
-static inline size_t allocator_sized_align(const void *ptr) {
+ALLOCATOR_API size_t allocator_sized_align(const void *ptr) {
     return ptr ? (size_t)1 << allocator_sized_header_((void *)ptr)->log2 : 0;
 }
 
 /** Allocates `size` bytes aligned to `align` (0 = default), optionally zeroed.
     `align` has to be a power of 2. */
-static inline void *allocator_sized_alloc(
+ALLOCATOR_API void *allocator_sized_alloc(
     allocator_t *alloc, size_t size, size_t align, int zero
 ) {
     void *out;
@@ -266,7 +286,7 @@ static inline void *allocator_sized_alloc(
 }
 
 /** `calloc` with overflow checking. */
-static inline void *allocator_sized_calloc(
+ALLOCATOR_API void *allocator_sized_calloc(
     allocator_t *alloc, size_t count, size_t size
 ) {
     if (size && count > ALLOCATOR_SIZED_MAX_ / size)
@@ -275,20 +295,23 @@ static inline void *allocator_sized_calloc(
 }
 
 /** Frees a block from this header. `NULL` is ignored. */
-static inline void allocator_sized_free(allocator_t *alloc, void *ptr) {
+ALLOCATOR_API void allocator_sized_free(allocator_t *alloc, void *ptr) {
     allocator_sized_header header;
     if (!ptr)
         return;
     header = *allocator_sized_header_(ptr);
     deallocate(
-        alloc, (unsigned char *)ptr - header.offset,
+        alloc,
+        (unsigned char *)ptr - header.offset,
         allocator_sized_total_(
-            header.mode, (size_t)1 << header.log2, header.size));
+            header.mode, (size_t)1 << header.log2, header.size
+        )
+    );
 }
 
 /** `realloc`. The alignment of the original block is preserved.
     When `zero` is set, the bytes added by growing are zeroed. */
-static inline void *allocator_sized_realloc(
+ALLOCATOR_API void *allocator_sized_realloc(
     allocator_t *alloc, void *ptr, size_t size, int zero
 ) {
     allocator_sized_header header;
@@ -321,22 +344,29 @@ static inline void *allocator_sized_realloc(
     old_total = allocator_sized_total_(header.mode, align, header.size);
     base = (unsigned char *)ptr - header.offset;
     if (header.mode == ALLOCATOR_SIZED_NATIVE_) {
-        moved = (unsigned char *)(zero
-            ? zreallocate_aligned(alloc, base, old_total, new_total, align)
-            : reallocate_aligned(alloc, base, old_total, new_total, align));
+        moved = (unsigned char
+                     *)(zero ? zreallocate_aligned(
+                                   alloc, base, old_total, new_total, align
+                               )
+                             : reallocate_aligned(
+                                   alloc, base, old_total, new_total, align
+                               ));
     } else {
-        moved = (unsigned char *)(zero
-            ? zreallocate(alloc, base, old_total, new_total)
-            : reallocate(alloc, base, old_total, new_total));
+        moved = (unsigned char
+                     *)(zero ? zreallocate(alloc, base, old_total, new_total)
+                             : reallocate(alloc, base, old_total, new_total));
     }
     if (!moved)
         return NULL;
     return allocator_sized_finish_(
-        moved, moved + header.offset, size, header.log2, header.mode);
+        moved, moved + header.offset, size, header.log2, header.mode
+    );
 }
 
 /** `strdup` using the allocator. */
-static inline char *allocator_sized_strdup(allocator_t *alloc, const char *str) {
+ALLOCATOR_API char *allocator_sized_strdup(
+    allocator_t *alloc, const char *str
+) {
     size_t len;
     char *out;
     if (!str)

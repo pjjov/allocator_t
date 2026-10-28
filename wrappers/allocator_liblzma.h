@@ -45,24 +45,28 @@
 
 #include <lzma.h>
 
+#ifndef ALLOCATOR_API
+    #define ALLOCATOR_API static inline
+#endif
+
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-static inline void *LZMA_API_CALL
+ALLOCATOR_API void *LZMA_API_CALL
 allocator_liblzma_alloc_fn(void *opaque, size_t nmemb, size_t size) {
     if (size && nmemb > (size_t)-1 / size)
         return NULL;
     return allocator_sized_alloc((allocator_t *)opaque, nmemb * size, 0, 0);
 }
 
-static inline void LZMA_API_CALL
+ALLOCATOR_API void LZMA_API_CALL
 allocator_liblzma_free_fn(void *opaque, void *ptr) {
     allocator_sized_free((allocator_t *)opaque, ptr);
 }
 
 /** Fills `out` so that liblzma uses `alloc`. */
-static inline void allocator_liblzma_init(
+ALLOCATOR_API void allocator_liblzma_init(
     lzma_allocator *out, allocator_t *alloc
 ) {
     out->alloc = &allocator_liblzma_alloc_fn;

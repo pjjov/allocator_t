@@ -47,26 +47,30 @@
     #error "allocator_glfw.h requires GLFW 3.4 or newer"
 #endif
 
+#ifndef ALLOCATOR_API
+    #define ALLOCATOR_API static inline
+#endif
+
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-static inline void *allocator_glfw_allocate_fn(size_t size, void *user) {
+ALLOCATOR_API void *allocator_glfw_allocate_fn(size_t size, void *user) {
     return allocator_sized_alloc((allocator_t *)user, size, 0, 0);
 }
 
-static inline void *allocator_glfw_reallocate_fn(
+ALLOCATOR_API void *allocator_glfw_reallocate_fn(
     void *block, size_t size, void *user
 ) {
     return allocator_sized_realloc((allocator_t *)user, block, size, 0);
 }
 
-static inline void allocator_glfw_deallocate_fn(void *block, void *user) {
+ALLOCATOR_API void allocator_glfw_deallocate_fn(void *block, void *user) {
     allocator_sized_free((allocator_t *)user, block);
 }
 
 /** A `GLFWallocator` using `alloc`. */
-static inline GLFWallocator allocator_glfw_allocator(allocator_t *alloc) {
+ALLOCATOR_API GLFWallocator allocator_glfw_allocator(allocator_t *alloc) {
     GLFWallocator out;
     out.allocate = &allocator_glfw_allocate_fn;
     out.reallocate = &allocator_glfw_reallocate_fn;

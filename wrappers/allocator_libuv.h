@@ -49,30 +49,34 @@
 
 #include <uv.h>
 
+#ifndef ALLOCATOR_API
+    #define ALLOCATOR_API static inline
+#endif
+
 #ifdef __cplusplus
 extern "C" {
 #endif
 
 static allocator_t *allocator_libuv_current_ = NULL;
 
-static inline void *allocator_libuv_malloc_fn(size_t size) {
+ALLOCATOR_API void *allocator_libuv_malloc_fn(size_t size) {
     return allocator_sized_alloc(allocator_libuv_current_, size, 0, 0);
 }
 
-static inline void *allocator_libuv_realloc_fn(void *ptr, size_t size) {
+ALLOCATOR_API void *allocator_libuv_realloc_fn(void *ptr, size_t size) {
     return allocator_sized_realloc(allocator_libuv_current_, ptr, size, 0);
 }
 
-static inline void *allocator_libuv_calloc_fn(size_t count, size_t size) {
+ALLOCATOR_API void *allocator_libuv_calloc_fn(size_t count, size_t size) {
     return allocator_sized_calloc(allocator_libuv_current_, count, size);
 }
 
-static inline void allocator_libuv_free_fn(void *ptr) {
+ALLOCATOR_API void allocator_libuv_free_fn(void *ptr) {
     allocator_sized_free(allocator_libuv_current_, ptr);
 }
 
 /** `uv_replace_allocator` using `alloc`. */
-static inline int allocator_libuv_replace(allocator_t *alloc) {
+ALLOCATOR_API int allocator_libuv_replace(allocator_t *alloc) {
     allocator_t *previous = allocator_libuv_current_;
     int rc;
 

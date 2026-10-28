@@ -47,18 +47,22 @@
 
 #include <vulkan/vulkan_core.h>
 
+#ifndef ALLOCATOR_API
+    #define ALLOCATOR_API static inline
+#endif
+
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-static inline VKAPI_ATTR void *VKAPI_CALL allocator_vulkan_allocation_fn(
+ALLOCATOR_API VKAPI_ATTR void *VKAPI_CALL allocator_vulkan_allocation_fn(
     void *user, size_t size, size_t alignment, VkSystemAllocationScope scope
 ) {
     (void)scope;
     return allocator_sized_alloc((allocator_t *)user, size, alignment, 0);
 }
 
-static inline VKAPI_ATTR void *VKAPI_CALL allocator_vulkan_reallocation_fn(
+ALLOCATOR_API VKAPI_ATTR void *VKAPI_CALL allocator_vulkan_reallocation_fn(
     void *user,
     void *original,
     size_t size,
@@ -71,15 +75,14 @@ static inline VKAPI_ATTR void *VKAPI_CALL allocator_vulkan_reallocation_fn(
     return allocator_sized_realloc((allocator_t *)user, original, size, 0);
 }
 
-static inline VKAPI_ATTR void VKAPI_CALL
+ALLOCATOR_API VKAPI_ATTR void VKAPI_CALL
 allocator_vulkan_free_fn(void *user, void *memory) {
     allocator_sized_free((allocator_t *)user, memory);
 }
 
 /** Allocation callbacks using `alloc`. */
-static inline VkAllocationCallbacks allocator_vulkan_callbacks(
-    allocator_t *alloc
-) {
+ALLOCATOR_API VkAllocationCallbacks
+allocator_vulkan_callbacks(allocator_t *alloc) {
     VkAllocationCallbacks cb;
     memset(&cb, 0, sizeof cb);
     cb.pUserData = alloc;

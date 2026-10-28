@@ -56,20 +56,24 @@
     #define ALLOCATOR_LIBGIT2_CALL
 #endif
 
+#ifndef ALLOCATOR_API
+    #define ALLOCATOR_API static inline
+#endif
+
 #ifdef __cplusplus
 extern "C" {
 #endif
 
 static allocator_t *allocator_libgit2_current_ = NULL;
 
-static inline void *ALLOCATOR_LIBGIT2_CALL
+ALLOCATOR_API void *ALLOCATOR_LIBGIT2_CALL
 allocator_libgit2_malloc_fn(size_t size, const char *file, int line) {
     (void)file;
     (void)line;
     return allocator_sized_alloc(allocator_libgit2_current_, size, 0, 0);
 }
 
-static inline void *ALLOCATOR_LIBGIT2_CALL allocator_libgit2_realloc_fn(
+ALLOCATOR_API void *ALLOCATOR_LIBGIT2_CALL allocator_libgit2_realloc_fn(
     void *ptr, size_t size, const char *file, int line
 ) {
     (void)file;
@@ -77,12 +81,12 @@ static inline void *ALLOCATOR_LIBGIT2_CALL allocator_libgit2_realloc_fn(
     return allocator_sized_realloc(allocator_libgit2_current_, ptr, size, 0);
 }
 
-static inline void ALLOCATOR_LIBGIT2_CALL allocator_libgit2_free_fn(void *ptr) {
+ALLOCATOR_API void ALLOCATOR_LIBGIT2_CALL allocator_libgit2_free_fn(void *ptr) {
     allocator_sized_free(allocator_libgit2_current_, ptr);
 }
 
 /** `git_libgit2_opts(GIT_OPT_SET_ALLOCATOR, ...)` using `alloc`. */
-static inline int allocator_libgit2_set(allocator_t *alloc) {
+ALLOCATOR_API int allocator_libgit2_set(allocator_t *alloc) {
     git_allocator ga;
     allocator_t *previous = allocator_libgit2_current_;
     int rc;

@@ -56,13 +56,17 @@
 
 #include <openssl/crypto.h>
 
+#ifndef ALLOCATOR_API
+    #define ALLOCATOR_API static inline
+#endif
+
 #ifdef __cplusplus
 extern "C" {
 #endif
 
 static allocator_t *allocator_openssl_current_ = NULL;
 
-static inline void *allocator_openssl_malloc_fn(
+ALLOCATOR_API void *allocator_openssl_malloc_fn(
     size_t size, const char *file, int line
 ) {
     (void)file;
@@ -70,7 +74,7 @@ static inline void *allocator_openssl_malloc_fn(
     return allocator_sized_alloc(allocator_openssl_current_, size, 0, 0);
 }
 
-static inline void *allocator_openssl_realloc_fn(
+ALLOCATOR_API void *allocator_openssl_realloc_fn(
     void *ptr, size_t size, const char *file, int line
 ) {
     (void)file;
@@ -78,7 +82,7 @@ static inline void *allocator_openssl_realloc_fn(
     return allocator_sized_realloc(allocator_openssl_current_, ptr, size, 0);
 }
 
-static inline void allocator_openssl_free_fn(
+ALLOCATOR_API void allocator_openssl_free_fn(
     void *ptr, const char *file, int line
 ) {
     (void)file;
@@ -87,7 +91,7 @@ static inline void allocator_openssl_free_fn(
 }
 
 /** `CRYPTO_set_mem_functions` using `alloc`. Returns 1 on success. */
-static inline int allocator_openssl_set(allocator_t *alloc) {
+ALLOCATOR_API int allocator_openssl_set(allocator_t *alloc) {
     allocator_t *previous = allocator_openssl_current_;
     int ok;
 

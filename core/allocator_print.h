@@ -25,6 +25,10 @@
 #ifndef ALLOCATOR_PRINT_H
 #define ALLOCATOR_PRINT_H
 
+#ifndef ALLOCATOR_API
+    #define ALLOCATOR_API static inline
+#endif
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -67,7 +71,7 @@ static void *print_allocator_fn(
     return out;
 }
 
-static inline void print_allocator_init(
+ALLOCATOR_API void print_allocator_init(
     print_allocator_t *out, FILE *log, allocator_t *base
 ) {
     allocator_fn **interface = (allocator_fn **)&out->alloc.interface;

@@ -49,26 +49,30 @@
 
 #include <ares.h>
 
+#ifndef ALLOCATOR_API
+    #define ALLOCATOR_API static inline
+#endif
+
 #ifdef __cplusplus
 extern "C" {
 #endif
 
 static allocator_t *allocator_cares_current_ = NULL;
 
-static inline void *allocator_cares_malloc_fn(size_t size) {
+ALLOCATOR_API void *allocator_cares_malloc_fn(size_t size) {
     return allocator_sized_alloc(allocator_cares_current_, size, 0, 0);
 }
 
-static inline void allocator_cares_free_fn(void *ptr) {
+ALLOCATOR_API void allocator_cares_free_fn(void *ptr) {
     allocator_sized_free(allocator_cares_current_, ptr);
 }
 
-static inline void *allocator_cares_realloc_fn(void *ptr, size_t size) {
+ALLOCATOR_API void *allocator_cares_realloc_fn(void *ptr, size_t size) {
     return allocator_sized_realloc(allocator_cares_current_, ptr, size, 0);
 }
 
 /** `ares_library_init_mem` using `alloc`. */
-static inline int allocator_cares_library_init(int flags, allocator_t *alloc) {
+ALLOCATOR_API int allocator_cares_library_init(int flags, allocator_t *alloc) {
     allocator_t *previous = allocator_cares_current_;
     int rc;
 

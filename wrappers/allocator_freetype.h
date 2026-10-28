@@ -51,11 +51,15 @@
 #include FT_MODULE_H
 #include FT_SYSTEM_H
 
+#ifndef ALLOCATOR_API
+    #define ALLOCATOR_API static inline
+#endif
+
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-static inline void *allocator_freetype_alloc_fn(FT_Memory memory, long size) {
+ALLOCATOR_API void *allocator_freetype_alloc_fn(FT_Memory memory, long size) {
     if (size < 0)
         return NULL;
     return allocator_sized_alloc(
@@ -63,11 +67,11 @@ static inline void *allocator_freetype_alloc_fn(FT_Memory memory, long size) {
     );
 }
 
-static inline void allocator_freetype_free_fn(FT_Memory memory, void *block) {
+ALLOCATOR_API void allocator_freetype_free_fn(FT_Memory memory, void *block) {
     allocator_sized_free((allocator_t *)memory->user, block);
 }
 
-static inline void *allocator_freetype_realloc_fn(
+ALLOCATOR_API void *allocator_freetype_realloc_fn(
     FT_Memory memory, long cur_size, long new_size, void *block
 ) {
     (void)cur_size; /* the size header is authoritative */
@@ -79,7 +83,7 @@ static inline void *allocator_freetype_realloc_fn(
 }
 
 /** Fills `memory` so that FreeType uses `alloc`. */
-static inline void allocator_freetype_memory_init(
+ALLOCATOR_API void allocator_freetype_memory_init(
     FT_Memory memory, allocator_t *alloc
 ) {
     memory->user = alloc;
@@ -89,7 +93,7 @@ static inline void allocator_freetype_memory_init(
 }
 
 /** Like `FT_Init_FreeType`, but using `alloc`. `memory` must outlive it. */
-static inline FT_Error allocator_freetype_new_library(
+ALLOCATOR_API FT_Error allocator_freetype_new_library(
     FT_Memory memory, allocator_t *alloc, FT_Library *library
 ) {
     FT_Error error;
@@ -103,7 +107,7 @@ static inline FT_Error allocator_freetype_new_library(
 }
 
 /** Counterpart of `allocator_freetype_new_library`. */
-static inline FT_Error allocator_freetype_done_library(FT_Library library) {
+ALLOCATOR_API FT_Error allocator_freetype_done_library(FT_Library library) {
     return FT_Done_Library(library);
 }
 

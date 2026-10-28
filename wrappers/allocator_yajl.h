@@ -40,26 +40,30 @@
 
 #include <yajl/yajl_common.h>
 
+#ifndef ALLOCATOR_API
+    #define ALLOCATOR_API static inline
+#endif
+
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-static inline void *allocator_yajl_malloc_fn(void *ctx, size_t size) {
+ALLOCATOR_API void *allocator_yajl_malloc_fn(void *ctx, size_t size) {
     return allocator_sized_alloc((allocator_t *)ctx, size, 0, 0);
 }
 
-static inline void *allocator_yajl_realloc_fn(
+ALLOCATOR_API void *allocator_yajl_realloc_fn(
     void *ctx, void *ptr, size_t size
 ) {
     return allocator_sized_realloc((allocator_t *)ctx, ptr, size, 0);
 }
 
-static inline void allocator_yajl_free_fn(void *ctx, void *ptr) {
+ALLOCATOR_API void allocator_yajl_free_fn(void *ctx, void *ptr) {
     allocator_sized_free((allocator_t *)ctx, ptr);
 }
 
 /** Allocation functions for `yajl_alloc` and `yajl_gen_alloc`. */
-static inline yajl_alloc_funcs allocator_yajl_funcs(allocator_t *alloc) {
+ALLOCATOR_API yajl_alloc_funcs allocator_yajl_funcs(allocator_t *alloc) {
     yajl_alloc_funcs funcs;
     funcs.malloc = &allocator_yajl_malloc_fn;
     funcs.realloc = &allocator_yajl_realloc_fn;

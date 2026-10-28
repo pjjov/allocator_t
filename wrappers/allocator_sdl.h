@@ -60,30 +60,34 @@
     #include <SDL2/SDL_stdinc.h>
 #endif
 
+#ifndef ALLOCATOR_API
+    #define ALLOCATOR_API static inline
+#endif
+
 #ifdef __cplusplus
 extern "C" {
 #endif
 
 static allocator_t *allocator_sdl_current_ = NULL;
 
-static inline void *SDLCALL allocator_sdl_malloc_fn(size_t size) {
+ALLOCATOR_API void *SDLCALL allocator_sdl_malloc_fn(size_t size) {
     return allocator_sized_alloc(allocator_sdl_current_, size, 0, 0);
 }
 
-static inline void *SDLCALL allocator_sdl_calloc_fn(size_t nmemb, size_t size) {
+ALLOCATOR_API void *SDLCALL allocator_sdl_calloc_fn(size_t nmemb, size_t size) {
     return allocator_sized_calloc(allocator_sdl_current_, nmemb, size);
 }
 
-static inline void *SDLCALL allocator_sdl_realloc_fn(void *mem, size_t size) {
+ALLOCATOR_API void *SDLCALL allocator_sdl_realloc_fn(void *mem, size_t size) {
     return allocator_sized_realloc(allocator_sdl_current_, mem, size, 0);
 }
 
-static inline void SDLCALL allocator_sdl_free_fn(void *mem) {
+ALLOCATOR_API void SDLCALL allocator_sdl_free_fn(void *mem) {
     allocator_sized_free(allocator_sdl_current_, mem);
 }
 
 /** `SDL_SetMemoryFunctions` using `alloc`. Returns 0 on success, else -1. */
-static inline int allocator_sdl_set(allocator_t *alloc) {
+ALLOCATOR_API int allocator_sdl_set(allocator_t *alloc) {
     allocator_t *previous = allocator_sdl_current_;
     int ok;
 

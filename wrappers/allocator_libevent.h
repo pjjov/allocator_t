@@ -51,26 +51,30 @@
 
 #include <event2/event.h>
 
+#ifndef ALLOCATOR_API
+    #define ALLOCATOR_API static inline
+#endif
+
 #ifdef __cplusplus
 extern "C" {
 #endif
 
 static allocator_t *allocator_libevent_current_ = NULL;
 
-static inline void *allocator_libevent_malloc_fn(size_t size) {
+ALLOCATOR_API void *allocator_libevent_malloc_fn(size_t size) {
     return allocator_sized_alloc(allocator_libevent_current_, size, 0, 0);
 }
 
-static inline void *allocator_libevent_realloc_fn(void *ptr, size_t size) {
+ALLOCATOR_API void *allocator_libevent_realloc_fn(void *ptr, size_t size) {
     return allocator_sized_realloc(allocator_libevent_current_, ptr, size, 0);
 }
 
-static inline void allocator_libevent_free_fn(void *ptr) {
+ALLOCATOR_API void allocator_libevent_free_fn(void *ptr) {
     allocator_sized_free(allocator_libevent_current_, ptr);
 }
 
 /** `event_set_mem_functions` using `alloc`. */
-static inline int allocator_libevent_set(allocator_t *alloc) {
+ALLOCATOR_API int allocator_libevent_set(allocator_t *alloc) {
     if (!alloc)
         return -1;
     allocator_libevent_current_ = alloc;

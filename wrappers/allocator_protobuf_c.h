@@ -43,22 +43,25 @@
 
 #include <protobuf-c/protobuf-c.h>
 
+#ifndef ALLOCATOR_API
+    #define ALLOCATOR_API static inline
+#endif
+
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-static inline void *allocator_protobuf_c_alloc_fn(void *data, size_t size) {
+ALLOCATOR_API void *allocator_protobuf_c_alloc_fn(void *data, size_t size) {
     return allocator_sized_alloc((allocator_t *)data, size, 0, 0);
 }
 
-static inline void allocator_protobuf_c_free_fn(void *data, void *ptr) {
+ALLOCATOR_API void allocator_protobuf_c_free_fn(void *data, void *ptr) {
     allocator_sized_free((allocator_t *)data, ptr);
 }
 
 /** A `ProtobufCAllocator` using `alloc`. */
-static inline ProtobufCAllocator allocator_protobuf_c_allocator(
-    allocator_t *alloc
-) {
+ALLOCATOR_API ProtobufCAllocator
+allocator_protobuf_c_allocator(allocator_t *alloc) {
     ProtobufCAllocator out;
     out.alloc = &allocator_protobuf_c_alloc_fn;
     out.free = &allocator_protobuf_c_free_fn;

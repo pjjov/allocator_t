@@ -33,6 +33,10 @@
 
 #include <stddef.h>
 
+#ifndef ALLOCATOR_API
+    #define ALLOCATOR_API static inline
+#endif
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -57,7 +61,7 @@ struct allocator_t {
     #define allocator_default(m_ptr, m_old, m_size, m_zalign) NULL
 #endif
 
-static inline void *allocator_call(
+ALLOCATOR_API void *allocator_call(
     allocator_t *alloc, void *ptr, size_t old, size_t size, size_t zalign
 ) {
     if (!alloc || !alloc->interface) {
@@ -66,7 +70,7 @@ static inline void *allocator_call(
     return alloc->interface(alloc, ptr, old, size, zalign);
 }
 
-static inline void *allocator_callx(
+ALLOCATOR_API void *allocator_callx(
     allocator_t *alloc, void *ptr, size_t old, size_t size, size_t zalign
 ) {
     void *res = allocator_call(alloc, ptr, old, size, zalign);
@@ -76,99 +80,99 @@ static inline void *allocator_callx(
     return res;
 }
 
-static inline void *allocate(allocator_t *alloc, size_t size) {
+ALLOCATOR_API void *allocate(allocator_t *alloc, size_t size) {
     return allocator_call(alloc, NULL, 0, size, 0);
 }
 
-static inline void *allocate_aligned(
+ALLOCATOR_API void *allocate_aligned(
     allocator_t *alloc, size_t size, size_t align
 ) {
     return allocator_call(alloc, NULL, 0, size, align & ~1);
 }
 
-static inline void *reallocate(
+ALLOCATOR_API void *reallocate(
     allocator_t *alloc, void *ptr, size_t old, size_t size
 ) {
     return allocator_call(alloc, ptr, old, size, 0);
 }
 
-static inline void *reallocate_aligned(
+ALLOCATOR_API void *reallocate_aligned(
     allocator_t *alloc, void *ptr, size_t old, size_t size, size_t align
 ) {
     return allocator_call(alloc, ptr, old, size, align & ~1);
 }
 
-static inline void *zallocate(allocator_t *alloc, size_t size) {
+ALLOCATOR_API void *zallocate(allocator_t *alloc, size_t size) {
     return allocator_call(alloc, NULL, 0, size, 1);
 }
 
-static inline void *zallocate_aligned(
+ALLOCATOR_API void *zallocate_aligned(
     allocator_t *alloc, size_t size, size_t align
 ) {
     return allocator_call(alloc, NULL, 0, size, align | 1);
 }
 
-static inline void *zreallocate(
+ALLOCATOR_API void *zreallocate(
     allocator_t *alloc, void *ptr, size_t old, size_t size
 ) {
     return allocator_call(alloc, ptr, old, size, 1);
 }
 
-static inline void *zreallocate_aligned(
+ALLOCATOR_API void *zreallocate_aligned(
     allocator_t *alloc, void *ptr, size_t old, size_t size, size_t align
 ) {
     return allocator_call(alloc, ptr, old, size, align | 1);
 }
 
-static inline void deallocate(allocator_t *alloc, void *ptr, size_t old) {
+ALLOCATOR_API void deallocate(allocator_t *alloc, void *ptr, size_t old) {
     allocator_call(alloc, ptr, old, 0, 0);
 }
 
-static inline void *xallocate(allocator_t *alloc, size_t size) {
+ALLOCATOR_API void *xallocate(allocator_t *alloc, size_t size) {
     return allocator_callx(alloc, NULL, 0, size, 0);
 }
 
-static inline void *xallocate_aligned(
+ALLOCATOR_API void *xallocate_aligned(
     allocator_t *alloc, size_t size, size_t align
 ) {
     return allocator_callx(alloc, NULL, 0, size, align & ~1);
 }
 
-static inline void *xreallocate(
+ALLOCATOR_API void *xreallocate(
     allocator_t *alloc, void *ptr, size_t old, size_t size
 ) {
     return allocator_callx(alloc, ptr, old, size, 0);
 }
 
-static inline void *xreallocate_aligned(
+ALLOCATOR_API void *xreallocate_aligned(
     allocator_t *alloc, void *ptr, size_t old, size_t size, size_t align
 ) {
     return allocator_callx(alloc, ptr, old, size, align & ~1);
 }
 
-static inline void *xzallocate(allocator_t *alloc, size_t size) {
+ALLOCATOR_API void *xzallocate(allocator_t *alloc, size_t size) {
     return allocator_callx(alloc, NULL, 0, size, 1);
 }
 
-static inline void *xzallocate_aligned(
+ALLOCATOR_API void *xzallocate_aligned(
     allocator_t *alloc, size_t size, size_t align
 ) {
     return allocator_callx(alloc, NULL, 0, size, align | 1);
 }
 
-static inline void *xzreallocate(
+ALLOCATOR_API void *xzreallocate(
     allocator_t *alloc, void *ptr, size_t old, size_t size
 ) {
     return allocator_callx(alloc, ptr, old, size, 1);
 }
 
-static inline void *xzreallocate_aligned(
+ALLOCATOR_API void *xzreallocate_aligned(
     allocator_t *alloc, void *ptr, size_t old, size_t size, size_t align
 ) {
     return allocator_callx(alloc, ptr, old, size, align | 1);
 }
 
-static inline void deallocate_all(allocator_t *alloc) {
+ALLOCATOR_API void deallocate_all(allocator_t *alloc) {
     allocator_call(alloc, (void *)alloc, 0, 0, 0);
 }
 

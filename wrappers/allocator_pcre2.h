@@ -46,20 +46,24 @@
 #endif
 #include <pcre2.h>
 
+#ifndef ALLOCATOR_API
+    #define ALLOCATOR_API static inline
+#endif
+
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-static inline void *allocator_pcre2_malloc_fn(PCRE2_SIZE size, void *data) {
+ALLOCATOR_API void *allocator_pcre2_malloc_fn(PCRE2_SIZE size, void *data) {
     return allocator_sized_alloc((allocator_t *)data, (size_t)size, 0, 0);
 }
 
-static inline void allocator_pcre2_free_fn(void *ptr, void *data) {
+ALLOCATOR_API void allocator_pcre2_free_fn(void *ptr, void *data) {
     allocator_sized_free((allocator_t *)data, ptr);
 }
 
 /** A general context using `alloc`. Returns NULL on failure. */
-static inline pcre2_general_context *allocator_pcre2_general_context(
+ALLOCATOR_API pcre2_general_context *allocator_pcre2_general_context(
     allocator_t *alloc
 ) {
     return pcre2_general_context_create(

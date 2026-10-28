@@ -46,20 +46,24 @@
 #endif
 #include <zstd.h>
 
+#ifndef ALLOCATOR_API
+    #define ALLOCATOR_API static inline
+#endif
+
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-static inline void *allocator_zstd_alloc_fn(void *opaque, size_t size) {
+ALLOCATOR_API void *allocator_zstd_alloc_fn(void *opaque, size_t size) {
     return allocator_sized_alloc((allocator_t *)opaque, size, 0, 0);
 }
 
-static inline void allocator_zstd_free_fn(void *opaque, void *address) {
+ALLOCATOR_API void allocator_zstd_free_fn(void *opaque, void *address) {
     allocator_sized_free((allocator_t *)opaque, address);
 }
 
 /** Memory functions for `ZSTD_create*_advanced`. */
-static inline ZSTD_customMem allocator_zstd_mem(allocator_t *alloc) {
+ALLOCATOR_API ZSTD_customMem allocator_zstd_mem(allocator_t *alloc) {
     ZSTD_customMem mem;
     mem.customAlloc = &allocator_zstd_alloc_fn;
     mem.customFree = &allocator_zstd_free_fn;

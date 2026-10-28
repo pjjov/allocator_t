@@ -50,22 +50,26 @@
 
 #include <jansson.h>
 
+#ifndef ALLOCATOR_API
+    #define ALLOCATOR_API static inline
+#endif
+
 #ifdef __cplusplus
 extern "C" {
 #endif
 
 static allocator_t *allocator_jansson_current_ = NULL;
 
-static inline void *allocator_jansson_malloc_fn(size_t size) {
+ALLOCATOR_API void *allocator_jansson_malloc_fn(size_t size) {
     return allocator_sized_alloc(allocator_jansson_current_, size, 0, 0);
 }
 
-static inline void allocator_jansson_free(void *ptr) {
+ALLOCATOR_API void allocator_jansson_free(void *ptr) {
     allocator_sized_free(allocator_jansson_current_, ptr);
 }
 
 /** `json_set_alloc_funcs` using `alloc`. */
-static inline int allocator_jansson_set(allocator_t *alloc) {
+ALLOCATOR_API int allocator_jansson_set(allocator_t *alloc) {
     if (!alloc)
         return -1;
     allocator_jansson_current_ = alloc;

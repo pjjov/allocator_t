@@ -53,21 +53,25 @@
 
 #include <gmp.h>
 
+#ifndef ALLOCATOR_API
+    #define ALLOCATOR_API static inline
+#endif
+
 #ifdef __cplusplus
 extern "C" {
 #endif
 
 static allocator_t *allocator_gmp_current_ = NULL;
 
-static inline size_t allocator_gmp_size_(size_t size) {
+ALLOCATOR_API size_t allocator_gmp_size_(size_t size) {
     return size ? size : 1;
 }
 
-static inline void *allocator_gmp_alloc_fn(size_t size) {
+ALLOCATOR_API void *allocator_gmp_alloc_fn(size_t size) {
     return xallocate(allocator_gmp_current_, allocator_gmp_size_(size));
 }
 
-static inline void *allocator_gmp_realloc_fn(
+ALLOCATOR_API void *allocator_gmp_realloc_fn(
     void *ptr, size_t old, size_t size
 ) {
     return xreallocate(
@@ -78,12 +82,12 @@ static inline void *allocator_gmp_realloc_fn(
     );
 }
 
-static inline void allocator_gmp_free_fn(void *ptr, size_t size) {
+ALLOCATOR_API void allocator_gmp_free_fn(void *ptr, size_t size) {
     deallocate(allocator_gmp_current_, ptr, allocator_gmp_size_(size));
 }
 
 /** `mp_set_memory_functions` using `alloc`. */
-static inline int allocator_gmp_set(allocator_t *alloc) {
+ALLOCATOR_API int allocator_gmp_set(allocator_t *alloc) {
     if (!alloc)
         return -1;
     allocator_gmp_current_ = alloc;

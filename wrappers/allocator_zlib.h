@@ -43,25 +43,28 @@
 
 #include <zlib.h>
 
+#ifndef ALLOCATOR_API
+    #define ALLOCATOR_API static inline
+#endif
+
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-static inline voidpf allocator_zlib_alloc_fn(
-    voidpf opaque, uInt items, uInt size
-) {
+ALLOCATOR_API voidpf
+allocator_zlib_alloc_fn(voidpf opaque, uInt items, uInt size) {
     size_t bytes = (size_t)items * size;
     if (size && bytes / size != items)
         return Z_NULL;
     return allocator_sized_alloc((allocator_t *)opaque, bytes, 0, 0);
 }
 
-static inline void allocator_zlib_free_fn(voidpf opaque, voidpf address) {
+ALLOCATOR_API void allocator_zlib_free_fn(voidpf opaque, voidpf address) {
     allocator_sized_free((allocator_t *)opaque, address);
 }
 
 /** Makes the stream use `alloc`. Call before `deflateInit`/`inflateInit`. */
-static inline void allocator_zlib_init(z_stream *strm, allocator_t *alloc) {
+ALLOCATOR_API void allocator_zlib_init(z_stream *strm, allocator_t *alloc) {
     strm->zalloc = &allocator_zlib_alloc_fn;
     strm->zfree = &allocator_zlib_free_fn;
     strm->opaque = (voidpf)alloc;

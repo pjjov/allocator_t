@@ -25,6 +25,10 @@
 #ifndef ALLOCATOR_JOINED_H
 #define ALLOCATOR_JOINED_H
 
+#ifndef ALLOCATOR_API
+    #define ALLOCATOR_API static inline
+#endif
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -60,7 +64,7 @@ static size_t join_alloc_align_up(size_t value, size_t alignment) {
     return (value + alignment - 1) & ~(alignment - 1);
 }
 
-static inline void *allocate_joined(
+ALLOCATOR_API void *allocate_joined(
     allocator_t *alloc, joined_allocation_t *blocks, size_t count, size_t *size
 ) {
     if (!blocks || !size || count == 0)

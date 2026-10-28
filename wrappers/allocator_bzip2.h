@@ -41,11 +41,15 @@
 
 #include <bzlib.h>
 
+#ifndef ALLOCATOR_API
+    #define ALLOCATOR_API static inline
+#endif
+
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-static inline void *allocator_bzip2_alloc_fn(
+ALLOCATOR_API void *allocator_bzip2_alloc_fn(
     void *opaque, int items, int size
 ) {
     size_t bytes;
@@ -57,12 +61,12 @@ static inline void *allocator_bzip2_alloc_fn(
     return allocator_sized_alloc((allocator_t *)opaque, bytes, 0, 0);
 }
 
-static inline void allocator_bzip2_free_fn(void *opaque, void *address) {
+ALLOCATOR_API void allocator_bzip2_free_fn(void *opaque, void *address) {
     allocator_sized_free((allocator_t *)opaque, address);
 }
 
 /** Makes the stream use `alloc`. Call before `BZ2_bz*Init`. */
-static inline void allocator_bzip2_init(bz_stream *strm, allocator_t *alloc) {
+ALLOCATOR_API void allocator_bzip2_init(bz_stream *strm, allocator_t *alloc) {
     strm->bzalloc = &allocator_bzip2_alloc_fn;
     strm->bzfree = &allocator_bzip2_free_fn;
     strm->opaque = alloc;
